@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FixBrain · Neuracademy</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#081a2c">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F5; --surface:#FFFFFF; --ink:#15283A; --muted:#566778; --line:#D2DBE4;
+  --accent:#2B5C8A; --accent-ink:#FFFFFF; --soft:#E1EAF3; --target:#36C2B1;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1824; --surface:#152434; --ink:#E5ECF3; --muted:#97A8B9; --line:#26394D;
+    --accent:#79AEDF; --accent-ink:#0E1824; --soft:#1B2E42; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1824; --surface:#152434; --ink:#E5ECF3; --muted:#97A8B9; --line:#26394D;
+  --accent:#79AEDF; --accent-ink:#0E1824; --soft:#1B2E42; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Figtree,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:23px;letter-spacing:-.015em}
+.brand small{font-weight:500;font-size:14px;color:var(--muted)}
+.mark{width:31px;height:31px;border-radius:50%;border:2.5px solid var(--accent);position:relative;flex:none}
+.mark::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--target);top:-4px;left:14px}
+.crp{font-size:14px;color:var(--muted)}
+.hero{padding:34px 0 10px}
+h1{font-size:clamp(32px,6vw,50px);line-height:1.08;letter-spacing:-.025em;margin:0 0 18px;max-width:17ch}
+.lead{font-size:19px;color:var(--muted);max-width:56ch;margin:0 0 10px}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:46px 0 16px;font-weight:600}
+.mods{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:9px;text-decoration:none}
+a.mod{transition:border-color .15s, transform .15s}
+a.mod:hover{border-color:var(--accent);transform:translateY(-2px)}
+.mod .name{font-size:21px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.mod p{margin:0;font-size:15px;color:var(--muted)}
+.tag{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--accent)}
+.mod.soon{opacity:.62}
+.mod.soon .tag{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.install{margin-top:18px;border:0;border-radius:10px;padding:13px 22px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.install[hidden]{display:none}
+.go{margin-top:6px;font-weight:600;color:var(--accent);font-size:15px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:46px 0 0}
+.note p{margin:0;font-size:15px;color:var(--muted)}
+.note p+p{margin-top:10px}
+footer{margin:52px 0 40px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer p{margin:0 0 5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="mark" aria-hidden="true"></span>FixBrain <small>Neuracademy</small></div>
+    <span class="crp">Mariana Assed · CRP 06/112781</span>
+  </header>
+
+  <section class="hero">
+    <h1>Treino cognitivo com acompanhamento clínico</h1>
+    <p class="lead">Plataforma de ferramentas digitais do Instituto Neuracademy, para estimulação e treino de funções cognitivas em crianças, adultos, idosos e atletas.</p>
+    <button class="install" id="install" hidden>Instalar aplicativo</button>
+  </section>
+
+  <h2>Módulos</h2>
+  <div class="mods">
+    <a class="mod" href="orbita/">
+      <span class="name">Órbita <span class="tag">Disponível</span></span>
+      <p>Rastreamento visual de múltiplos objetos em 3D. Treina atenção dividida, velocidade de processamento e memória de trabalho visuoespacial, com dificuldade ajustada automaticamente ao desempenho.</p>
+      <span class="go">Entrar →</span>
+    </a>
+    <a class="mod" href="nebula/">
+      <span class="name">NEBULA <span class="tag">Disponível</span></span>
+      <p>Respiração guiada e autorregulação emocional. Respiração diafragmática com nebulosa animada, ritmo ajustável, registro de tensão antes e depois, psicoeducação e modo sensível ao trauma.</p>
+      <span class="go">Entrar →</span>
+    </a>
+    <div class="mod soon">
+      <span class="name">Reabilitação <span class="tag">Em desenvolvimento</span></span>
+      <p>Exercícios de reabilitação cognitiva para uso entre sessões, com protocolos definidos pela profissional.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <p><strong>Base científica.</strong> O Órbita usa o paradigma de rastreamento de múltiplos objetos descrito por Pylyshyn e Storm em 1988, com ajuste adaptativo de velocidade por método de escada. O NEBULA usa respiração lenta e diafragmática, sem retenção do ar, com conteúdos educativos referenciados.</p>
+    <p><strong>Natureza das ferramentas.</strong> São instrumentos de treino, estimulação e bem-estar, não de avaliação diagnóstica. Os resultados acompanham a evolução do treino e não substituem avaliação neuropsicológica.</p>
+  </div>
+
+  <footer>
+    <p>FixBrain é uma plataforma do Instituto Neuracademy de Avaliação, Reabilitação e Treinamento.</p>
+    <p>Rua Teodoro Sampaio, 352, cj 48 · São Paulo</p>
+  </footer>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById('install'), ev=null;
+  window.addEventListener('beforeinstallprompt',function(e){ e.preventDefault(); ev=e; btn.hidden=false; });
+  btn.addEventListener('click',function(){ if(!ev) return; ev.prompt(); ev.userChoice.finally(function(){ ev=null; btn.hidden=true; }); });
+  window.addEventListener('appinstalled',function(){ btn.hidden=true; });
+  if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/i.test(location.hostname)){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>

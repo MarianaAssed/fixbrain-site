@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NEBULA · Respiração guiada · FixBrain</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#090F24">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --space:#090F24; --indigo:#343B83; --violet:#8868D9; --lavender:#C7B8FF; --star:#F5F6FF; --teal:#75D9D0;
+  --bg:#090F24; --surface:rgba(52,59,131,.22); --surface2:rgba(52,59,131,.38); --line:rgba(199,184,255,.18);
+  --ink:#F5F6FF; --muted:#B4B6D6; --accent:#C7B8FF; --accent-ink:#141A3A; --ok:#75D9D0; --warn:#F2CF8A; --err:#FF9C9C;
+  color-scheme:dark; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Figtree,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-color:var(--space);background-image:radial-gradient(1100px 700px at 85% -10%,rgba(136,104,217,.28),transparent 60%),
+             radial-gradient(900px 600px at -10% 110%,rgba(52,59,131,.55),transparent 60%);background-repeat:no-repeat;background-attachment:fixed}
+body.static-bg{background-image:none}
+h1[tabindex="-1"]:focus{outline:none}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:22px;letter-spacing:.14em;text-decoration:none;color:var(--ink)}
+.brand small{font-weight:500;font-size:13px;letter-spacing:.02em;color:var(--muted)}
+.neb{width:30px;height:30px;border-radius:50%;flex:none;background:radial-gradient(circle at 40% 40%,var(--star) 0 8%,var(--lavender) 18%,var(--violet) 42%,rgba(52,59,131,.0) 72%);box-shadow:0 0 18px rgba(136,104,217,.6)}
+.who{font-size:15px;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:6px 4px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--muted);cursor:pointer;padding:8px 0;font-weight:600;font-size:15px}
+.back:hover{color:var(--ink)}
+.banner{background:rgba(242,207,138,.1);border:1px solid rgba(242,207,138,.3);color:var(--warn);border-radius:12px;padding:11px 15px;font-size:14px;margin:0 0 18px;display:none}
+.banner.on{display:block}
+h1{font-size:clamp(30px,6vw,48px);line-height:1.08;letter-spacing:-.02em;margin:10px 0 14px;font-weight:700}
+h2{font-size:22px;margin:0 0 8px;letter-spacing:-.01em}
+h3{font-size:17px;margin:0 0 4px}
+.lead{font-size:19px;color:var(--muted);max-width:52ch;margin:0 0 26px}
+.view{display:none;padding-bottom:56px}
+.view.on{display:block;animation:fade .45s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;backdrop-filter:blur(6px)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:14px 26px;font-weight:600;cursor:pointer;background:var(--lavender);color:var(--accent-ink);min-height:48px}
+.btn.big{font-size:19px;padding:17px 34px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.soft{background:var(--surface2);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;align-items:center}
+.hint{font-size:14px;color:var(--muted);margin:8px 0 0}
+.err{font-size:14px;color:var(--err);margin:10px 0 0;min-height:1em}
+.okmsg{font-size:14px;color:var(--ok);margin:10px 0 0}
+label{display:block;font-size:15px;font-weight:600;margin:14px 0 6px}
+input[type=text],input[type=email],input[type=password],select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(9,15,36,.6)}
+/* home */
+.hero{text-align:center;padding:26px 0 8px}
+.hero .orb{width:min(240px,58vw);aspect-ratio:1;margin:0 auto 18px;border-radius:50%;
+  background:radial-gradient(circle at 46% 44%,rgba(245,246,255,.95) 0 4%,rgba(199,184,255,.85) 12%,rgba(136,104,217,.55) 32%,rgba(52,59,131,.25) 55%,transparent 70%);
+  filter:blur(.3px);animation:orb 10s ease-in-out infinite}
+@keyframes orb{0%,100%{transform:scale(.86)}50%{transform:scale(1)}}
+.hero h1{margin:0 auto 6px;letter-spacing:.2em;font-size:clamp(38px,9vw,64px);padding-left:.2em}
+.hero .sub{color:var(--muted);font-size:15px;letter-spacing:.08em;margin:0 0 14px}
+.hero .welcome{font-size:20px;margin:0 auto 26px;max-width:30ch}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:30px}
+.tile{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;cursor:pointer;transition:border-color .2s,background .2s}
+.tile:hover{border-color:var(--lavender);background:var(--surface2)}
+.tile b{font-size:18px}
+.tile span{font-size:14px;color:var(--muted)}
+.tile.safe{border-color:rgba(117,217,208,.35)}
+/* onboarding */
+.onb{margin:26px auto 0;max-width:560px}
+.onb ol{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:15px}
+.onb li{margin:6px 0}
+/* práticas */
+.plist{display:grid;gap:12px}
+.pcard{display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;cursor:pointer;width:100%}
+.pcard:hover{border-color:var(--lavender)}
+.pcard .t b{display:block;font-size:18px}
+.pcard .t span{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.pcard .meta{font-size:13px;color:var(--lavender);white-space:nowrap;text-align:right}
+.fav{background:none;border:0;cursor:pointer;font-size:22px;color:var(--muted);padding:6px;line-height:1}
+.fav[aria-pressed="true"]{color:var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:600;min-height:44px}
+.chip[aria-pressed="true"]{border-color:var(--lavender);background:rgba(199,184,255,.14)}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);cursor:pointer;font-size:20px}
+.stepper output{min-width:64px;text-align:center;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:620px){.two{grid-template-columns:1fr}}
+/* escala */
+.scale{display:grid;grid-template-columns:repeat(11,1fr);gap:6px;margin-top:16px}
+.scale button{aspect-ratio:1;min-height:40px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:17px}
+.scale button[aria-pressed="true"]{background:var(--lavender);color:var(--accent-ink);border-color:var(--lavender)}
+.scale-ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px;gap:12px}
+@media (max-width:480px){.scale{grid-template-columns:repeat(6,1fr)}}
+/* resultado / universo */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .v{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .k{font-size:14px;color:var(--muted)}
+.compare{font-size:clamp(28px,6vw,40px);font-weight:700;font-variant-numeric:tabular-nums;margin:6px 0}
+.sky{position:relative;border-radius:18px;border:1px solid var(--line);overflow:hidden;background:radial-gradient(600px 300px at 70% 20%,rgba(136,104,217,.25),transparent),rgba(9,15,36,.7)}
+.sky svg{display:block;width:100%;height:auto}
+.chartbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;overflow-x:auto}
+.chartbox svg{width:100%;min-width:440px;height:auto;display:block}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+.empty{color:var(--muted);padding:16px 0}
+.section{margin-top:30px}
+.toggle{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.toggle input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--lavender);flex:none}
+.toggle b{display:block;font-size:16px}
+.toggle span{display:block;font-size:14px;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--lavender)}
+/* biblioteca */
+.art p{margin:0 0 14px;max-width:66ch}
+.ev{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 9px;margin-right:6px;vertical-align:2px}
+.ev-ok{background:rgba(117,217,208,.16);color:var(--teal)}
+.ev-mod{background:rgba(199,184,255,.16);color:var(--lavender)}
+.ev-pre{background:rgba(242,207,138,.14);color:var(--warn)}
+.ev-cli{background:rgba(245,246,255,.1);color:var(--star)}
+.refs{font-size:13.5px;color:var(--muted);padding-left:20px}
+.refs li{margin:6px 0}
+/* porto seguro */
+.ground{font-size:clamp(20px,4vw,26px);line-height:1.45;max-width:30ch;margin:14px 0 0}
+.ground-n{font-size:64px;font-weight:700;color:var(--teal);line-height:1}
+.help li{margin:8px 0}
+/* arena */
+#arena{position:fixed;inset:0;z-index:30;display:none;color:var(--star);
+  background:radial-gradient(ellipse at 50% 45%,#1a2059 0%,#0d1433 45%,#090F24 80%)}
+#arena.on{display:block}
+#arena.static{background:#0d1433}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ahud{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 10px;font-size:15px}
+.apill{background:rgba(245,246,255,.08);border-radius:999px;padding:7px 14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.acenter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;width:90%}
+#phase{font-size:clamp(22px,4.6vw,34px);font-weight:700;letter-spacing:.32em;padding-left:.32em;text-shadow:0 2px 18px rgba(9,15,36,.8);transition:opacity .6s}
+#phaseSub{font-size:clamp(18px,3.4vw,24px);color:var(--lavender);margin-top:8px;min-height:1.4em;font-variant-numeric:tabular-nums;text-shadow:0 2px 12px rgba(9,15,36,.8)}
+#sbar{width:min(360px,70vw);height:10px;border-radius:999px;background:rgba(245,246,255,.12);margin:26px auto 0;overflow:hidden;display:none}
+#sbar i{display:block;height:100%;width:0;background:var(--lavender);border-radius:999px}
+#arena.static #sbar{display:block}
+.abottom{position:absolute;left:0;right:0;bottom:0;padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 18px)}
+.aprog{height:4px;border-radius:999px;background:rgba(245,246,255,.12);overflow:hidden;max-width:520px;margin:0 auto 16px}
+.aprog i{display:block;height:100%;width:0;background:var(--teal)}
+.actrls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.abtn{background:rgba(245,246,255,.12);color:var(--star);border:0;border-radius:999px;padding:13px 22px;cursor:pointer;font-weight:600;min-height:48px}
+.abtn.main{background:var(--lavender);color:var(--accent-ink)}
+.abtn.care{background:transparent;border:1px solid rgba(245,246,255,.3)}
+#ready{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(9,15,36,.55)}
+#ready[hidden]{display:none}
+#ready p{max-width:34ch;color:var(--muted);margin:10px 0 22px}
+footer{margin:40px 0 34px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer p{margin:0 0 5px}
+#loading{padding:60px 0;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){ .hero .orb{animation:none} .view.on{animation:none} }
+body.reduce .hero .orb{animation:none}
+body.reduce .view.on{animation:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#"><span class="neb" aria-hidden="true"></span>NEBULA <small>FixBrain · Neuracademy</small></a>
+    <div class="who" id="who"></div>
+  </header>
+  <p class="banner" id="banner"></p>
+  <div id="loading">Carregando…</div>
+
+  <!-- HOME -->
+  <section class="view" id="v-home">
+    <div class="hero">
+      <div class="orb" aria-hidden="true"></div>
+      <h1>NEBULA</h1>
+      <p class="sub" data-t="by">Respiração guiada · FixBrain</p>
+      <p class="welcome" data-t="welcome">Um momento para respirar. Um espaço para você.</p>
+      <button class="btn big" id="hStart" data-t="startBreath">Começar a respirar</button>
+      <p class="hint" id="hQuick"></p>
+    </div>
+    <div class="panel onb" id="onb" hidden>
+      <h2>Antes de começar</h2>
+      <ol>
+        <li>Você está no controle. Pode mudar a velocidade e a duração, pausar e parar a qualquer momento.</li>
+        <li>Pode manter os olhos abertos. Respire de forma confortável, sem forçar o volume de ar e sem prender a respiração.</li>
+        <li>Se sentir tontura, falta de ar ou mais ansiedade, pare e volte a respirar do seu jeito. Se a respiração não for confortável para você, use o <b>Porto Seguro</b>.</li>
+        <li>O NEBULA é uma ferramenta de bem-estar e psicoeducação. Não faz diagnóstico nem substitui tratamento.</li>
+      </ol>
+      <div class="row"><button class="btn" id="onbOk">Entendi</button><button class="linkbtn" id="onbSkip">Pular</button></div>
+    </div>
+    <div class="grid">
+      <button class="tile" data-go="praticas"><b data-t="explore">Explorar técnicas</b><span>Cinco formas de respirar, todas ajustáveis.</span></button>
+      <button class="tile" data-go="universo"><b data-t="universe">Meu Universo</b><span>Seu histórico de prática, uma estrela por sessão.</span></button>
+      <button class="tile" data-go="entenda"><b data-t="learn">Entenda seu corpo</b><span>Neurociência do estresse e da respiração.</span></button>
+      <button class="tile safe" data-go="porto"><b data-t="safe">Porto Seguro</b><span>Recursos de olhos abertos, sem foco na respiração.</span></button>
+      <button class="tile" data-go="config"><b data-t="settings">Configurações</b><span>Ritmo, visual, sons e acessibilidade.</span></button>
+    </div>
+    <footer>
+      <p>O NEBULA é um módulo do FixBrain, plataforma do Instituto Neuracademy. Ferramenta complementar de bem-estar e psicoeducação: não diagnostica nem substitui avaliação ou tratamento.</p>
+      <p><a href="../">← Voltar ao FixBrain</a></p>
+    </footer>
+  </section>
+
+  <!-- PRÁTICAS -->
+  <section class="view" id="v-praticas">
+    <button class="back" data-go="">← Início</button>
+    <h1 data-t="explore">Explorar técnicas</h1>
+    <p class="lead">Escolha uma prática. Os tempos sugeridos são só um ponto de partida: ajuste ao seu conforto.</p>
+    <div class="plist" id="plist"></div>
+  </section>
+
+  <!-- PREPARAR -->
+  <section class="view" id="v-preparar">
+    <button class="back" data-go="praticas">← Técnicas</button>
+    <h1 id="pTitle"></h1>
+    <p class="lead" id="pGuide"></p>
+    <div class="panel">
+      <h3>Duração</h3>
+      <div class="chips" id="pDur"></div>
+      <div class="two section" style="margin-top:22px">
+        <div><h3>Inspirar</h3><div class="stepper"><button data-st="inhale" data-d="-0.5" aria-label="Diminuir inspiração">−</button><output id="oIn"></output><button data-st="inhale" data-d="0.5" aria-label="Aumentar inspiração">+</button></div></div>
+        <div><h3>Expirar</h3><div class="stepper"><button data-st="exhale" data-d="-0.5" aria-label="Diminuir expiração">−</button><output id="oOut"></output><button data-st="exhale" data-d="0.5" aria-label="Aumentar expiração">+</button></div></div>
+      </div>
+      <p class="hint" id="pRate"></p>
+      <div class="row" id="pPersonalRow">
+        <button class="btn soft" id="pCalib">Encontrar meu ritmo</button>
+        <button class="linkbtn" id="pUsePersonal" hidden>Usar meu ritmo salvo</button>
+      </div>
+      <h3 style="margin-top:22px">Visual</h3>
+      <div class="chips" id="pVis"></div>
+      <h3 style="margin-top:22px">Som</h3>
+      <div class="chips" id="pSnd"></div>
+      <label class="toggle" style="border-bottom:0"><input type="checkbox" id="pTone"><div><b>Som acompanha a respiração</b><span>O som se abre levemente ao inspirar e recua ao expirar, como uma onda.</span></div></label>
+      <label class="toggle" style="border-bottom:0;padding-top:0"><input type="checkbox" id="pBreath"><div><b>Som de respiração</b><span>Uma respiração suave que inspira e expira junto com você, no ritmo escolhido. Desligue se ouvir respiração for desconfortável.</span></div></label>
+      <div class="row" style="margin-top:4px"><button class="btn soft" id="pTest">▶ Ouvir uma amostra</button><span class="hint" id="pTestMsg" style="margin:0"></span></div>
+    </div>
+    <div class="row"><button class="btn big" id="pGo">Iniciar prática</button></div>
+    <p class="hint">Sem retenção do ar. Você pode pausar ou encerrar a qualquer momento.</p>
+  </section>
+
+  <!-- CALIBRAR -->
+  <section class="view" id="v-calib">
+    <button class="back" data-go="preparar">← Voltar</button>
+    <h1>Encontrar meu ritmo</h1>
+    <p class="lead">Respire do seu jeito, sem mudar nada. Toque no botão quando começar a inspirar e de novo quando começar a expirar, por três respirações. O NEBULA sugere um ritmo um pouco mais lento que o seu.</p>
+    <div class="panel" style="text-align:center">
+      <button class="btn big" id="cTap" style="min-width:260px">Comecei a inspirar</button>
+      <p class="hint" id="cInfo">0 de 7 toques</p>
+      <p class="okmsg" id="cRes"></p>
+      <div class="row" style="justify-content:center"><button class="btn" id="cUse" hidden>Usar este ritmo</button><button class="linkbtn" id="cReset">Recomeçar</button></div>
+    </div>
+  </section>
+
+  <!-- CHECK-IN / CHECK-OUT -->
+  <section class="view" id="v-checkin">
+    <h1 id="ckTitle">Como você está se sentindo agora?</h1>
+    <p class="lead">Marque o nível de tensão que você percebe neste momento. É opcional.</p>
+    <div class="panel">
+      <div class="scale" id="ckScale" role="group" aria-label="Escala de tensão de 0 a 10"></div>
+      <div class="scale-ends"><span>0 · nenhuma tensão percebida</span><span>10 · tensão extremamente intensa</span></div>
+    </div>
+    <div class="row"><button class="btn" id="ckNext" disabled>Continuar</button><button class="linkbtn" id="ckSkip">Pular</button></div>
+  </section>
+
+  <!-- RESULTADO -->
+  <section class="view" id="v-result">
+    <h1>Sessão concluída</h1>
+    <div class="panel" id="rTension"></div>
+    <div class="stats" id="rStats"></div>
+    <p class="hint" id="rSaved"></p>
+    <div class="row"><button class="btn" id="rAgain">Praticar de novo</button><button class="btn ghost" data-go="universo">Ver Meu Universo</button><button class="btn ghost" data-go="">Início</button></div>
+  </section>
+
+  <!-- DESCONFORTO -->
+  <section class="view" id="v-care">
+    <h1>Tudo bem parar</h1>
+    <div class="panel">
+      <p>Volte a respirar do seu jeito, naturalmente, sem contar e sem controlar. Se ajudar, apoie os pés no chão e olhe ao redor.</p>
+      <p>Tontura ou formigamento leve costumam passar em poucos minutos quando a respiração volta ao normal.</p>
+      <p><b>Se a falta de ar, a dor no peito ou o mal-estar forem intensos ou não passarem, procure atendimento médico.</b> No Brasil: SAMU 192. Para apoio emocional: CVV 188 (ligação gratuita, 24 horas).</p>
+      <p class="hint">Se o desconforto se repetir nas práticas, converse com sua psicóloga ou psicólogo antes de continuar.</p>
+    </div>
+    <div class="row"><button class="btn" data-go="porto">Ir ao Porto Seguro</button><button class="btn ghost" data-go="">Início</button></div>
+  </section>
+
+  <!-- MEU UNIVERSO -->
+  <section class="view" id="v-universo">
+    <button class="back" data-go="">← Início</button>
+    <h1 data-t="universe">Meu Universo</h1>
+    <p class="lead">Cada prática concluída acende uma estrela. Não há metas nem sequências: o universo é seu e cresce no seu ritmo.</p>
+    <div class="sky" id="uSky"></div>
+    <div class="stats" id="uStats"></div>
+    <div class="section"><h2>Minutos por semana</h2><div class="chartbox" id="uWeeks"></div></div>
+    <div class="section" id="uTenWrap"><h2>Tensão relatada antes e depois</h2><p class="hint" style="margin-bottom:10px">Registros subjetivos, de 0 a 10. Não são medida clínica.</p><div class="chartbox" id="uTension"></div></div>
+    <div class="section"><h2>Histórico</h2><div class="panel tablewrap" id="uList"></div></div>
+    <div class="section panel" id="uShare" hidden>
+      <h2>Compartilhar com minha neuropsicóloga</h2>
+      <label class="toggle"><input type="checkbox" id="uShareBox"><div><b>Permitir que a profissional veja minhas práticas do NEBULA</b><span>Desligado por padrão. Ela verá data, prática, duração e a escala de tensão. Você pode desligar quando quiser.</span></div></label>
+      <p class="hint" id="uShareMsg"></p>
+    </div>
+    <div class="section panel">
+      <h2>Seus dados</h2>
+      <p class="hint" id="uWhere"></p>
+      <div class="row"><button class="btn soft" id="uCsv">Exportar planilha (CSV)</button><button class="btn soft" id="uJson">Exportar JSON</button><button class="btn soft" id="uCopy">Copiar dados</button><button class="btn ghost" id="uDel">Apagar histórico</button></div>
+      <p class="err" id="uDelMsg"></p>
+    </div>
+  </section>
+
+  <!-- ENTENDA -->
+  <section class="view" id="v-entenda">
+    <button class="back" data-go="">← Início</button>
+    <h1 data-t="learn">Entenda seu corpo</h1>
+    <p class="lead">Textos curtos sobre estresse, sistema nervoso e respiração. Cada trecho indica se a informação é bem estabelecida, se tem evidência moderada ou se ainda é preliminar.</p>
+    <div class="plist" id="aList"></div>
+  </section>
+  <section class="view" id="v-artigo">
+    <button class="back" data-go="entenda">← Entenda seu corpo</button>
+    <article class="art" id="aBody"></article>
+  </section>
+
+  <!-- PORTO SEGURO -->
+  <section class="view" id="v-porto">
+    <button class="back" data-go="">← Início</button>
+    <h1 data-t="safe">Porto Seguro</h1>
+    <p class="lead">Um espaço para quando focar na respiração não é confortável. Tudo aqui é de olhos abertos, sem áudio e pode ser interrompido a qualquer momento.</p>
+    <div class="plist">
+      <button class="pcard" id="psGround"><span class="t"><b>Aqui e agora</b><span>Perceber o ambiente com os sentidos: 5 coisas que vejo, 4 que sinto, 3 sons…</span></span><span class="meta">olhos abertos</span></button>
+      <button class="pcard" id="psSoft"><span class="t"><b>Respiração livre e suave</b><span>Círculo simples, sem números, sem som. Siga se e quando quiser.</span></span><span class="meta">sem contagem</span></button>
+      <button class="pcard" id="psLook"><span class="t"><b>Observar o céu</b><span>Só olhar estrelas paradas, sem instrução nenhuma, pelo tempo que quiser.</span></span><span class="meta">sem tarefa</span></button>
+    </div>
+    <div class="section panel help">
+      <h2>Limites do NEBULA e onde buscar ajuda</h2>
+      <ul>
+        <li>O NEBULA não faz psicoterapia, não trata trauma e não atende crises.</li>
+        <li>Se você está em sofrimento intenso ou pensando em se machucar, procure ajuda agora. No Brasil: <b>CVV 188</b> (gratuito, 24 horas, também em cvv.org.br), <b>SAMU 192</b> ou o pronto-socorro mais próximo. Fora do Brasil, ligue para o número de emergência local (112 na União Europeia, 911 nos Estados Unidos e Canadá).</li>
+        <li>Para acompanhamento contínuo, converse com sua psicóloga ou psicólogo, ou procure o CAPS ou a UBS da sua região.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="view" id="v-ground">
+    <button class="back" data-go="porto">← Porto Seguro</button>
+    <div class="panel" style="margin-top:12px">
+      <div class="ground-n" id="gN"></div>
+      <p class="ground" id="gText"></p>
+      <div class="row"><button class="btn" id="gNext">Próximo</button><button class="btn ghost" data-go="porto">Parar</button></div>
+    </div>
+  </section>
+
+  <!-- CONFIGURAÇÕES -->
+  <section class="view" id="v-config">
+    <button class="back" data-go="">← Início</button>
+    <h1 data-t="settings">Configurações</h1>
+    <div class="panel">
+      <h3>Duração padrão</h3>
+      <div class="chips" id="sDur"></div>
+      <h3 style="margin-top:22px">Visual</h3>
+      <div class="chips" id="sVis"></div>
+      <label for="sInt">Intensidade da luz da nebulosa</label>
+      <input type="range" id="sInt" min="0.3" max="1" step="0.05">
+      <h3 style="margin-top:22px">Som ambiente</h3>
+      <div class="chips" id="sSound"></div>
+      <label for="sVol">Volume</label>
+      <input type="range" id="sVol" min="0.1" max="1" step="0.05">
+      <h3 style="margin-top:22px">Idioma</h3>
+      <div class="chips" id="sLang"></div>
+    </div>
+    <div class="panel section">
+      <h3>Orientações durante a prática</h3>
+      <label class="toggle"><input type="checkbox" id="sNumbers"><div><b>Mostrar contagem de segundos</b><span>Desligue se acompanhar números for desconfortável.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sTone"><div><b>Som acompanha a respiração</b><span>O som ambiente se abre levemente ao inspirar e recua ao expirar.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sBreath"><div><b>Som de respiração</b><span>Uma respiração suave que acompanha a inspiração e a expiração.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sCue"><div><b>Som suave na troca de fase</b><span>Um toque baixo no início de cada inspiração e expiração.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sVoice"><div><b>Narração</b><span>Uma voz diz “inspire” e “expire”. Usa a voz do seu aparelho.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sVibe"><div><b>Vibração discreta</b><span>Em celulares compatíveis.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sSilent"><div><b>Modo silencioso</b><span>Desliga todo som e narração, mesmo se ativados acima.</span></div></label>
+    </div>
+    <div class="panel section">
+      <h3>Acessibilidade e registros</h3>
+      <label class="toggle"><input type="checkbox" id="sReduce"><div><b>Reduzir movimentos</b><span>Sem estrelas cintilando nem rotação; só a expansão necessária para guiar o ritmo.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sStaticBg"><div><b>Fundo estático</b><span>Remove os brilhos de fundo das telas.</span></div></label>
+      <label class="toggle"><input type="checkbox" id="sCheck"><div><b>Perguntar a tensão antes e depois</b><span>Os registros são opcionais e você pode desligá-los.</span></div></label>
+    </div>
+    <p class="hint">As preferências ficam salvas neste aparelho.</p>
+  </section>
+
+  <!-- CONTA -->
+  <section class="view" id="v-conta">
+    <button class="back" data-go="">← Início</button>
+    <h1>Entrar no FixBrain</h1>
+    <p class="lead">Use a mesma conta do Órbita. Com ela, seu histórico do NEBULA fica guardado com segurança e acessível em qualquer aparelho. Também é possível praticar sem entrar: o histórico fica só neste navegador.</p>
+    <div class="panel" style="max-width:480px">
+      <div class="chips" role="tablist" style="margin:0 0 6px">
+        <button class="chip" id="tIn" aria-pressed="true">Entrar</button>
+        <button class="chip" id="tUp" aria-pressed="false">Criar conta</button>
+      </div>
+      <div id="upFields" hidden>
+        <label for="aName">Primeiro nome</label><input type="text" id="aName" autocomplete="given-name">
+        <label for="aYear">Ano de nascimento</label><input type="text" id="aYear" inputmode="numeric" maxlength="4" placeholder="Ex.: 1985">
+      </div>
+      <label for="aEmail">E-mail</label><input type="email" id="aEmail" autocomplete="email">
+      <label for="aPass">Senha</label><input type="password" id="aPass" autocomplete="current-password">
+      <p class="err" id="aErr" role="alert"></p>
+      <div class="row"><button class="btn" id="aGo">Entrar</button></div>
+      <p class="hint" id="aHint">Primeira vez? Use o e-mail que sua neuropsicóloga autorizou. A senha precisa ter pelo menos 6 caracteres.</p>
+    </div>
+  </section>
+  <section class="view" id="v-perfil">
+    <h1>Complete seu cadastro</h1>
+    <div class="panel" style="max-width:460px">
+      <label for="cName">Primeiro nome</label><input type="text" id="cName" autocomplete="given-name">
+      <label for="cYear">Ano de nascimento</label><input type="text" id="cYear" inputmode="numeric" maxlength="4" placeholder="Ex.: 1985">
+      <p class="err" id="cErr" role="alert"></p>
+      <div class="row"><button class="btn" id="cSave">Salvar e continuar</button></div>
+    </div>
+  </section>
+
+  <!-- PAINEL PROFISSIONAL -->
+  <section class="view" id="v-painel">
+    <button class="back" data-go="">← Início</button>
+    <h1>Pacientes · NEBULA</h1>
+    <p class="lead">Aparecem aqui apenas os pacientes que ligaram o compartilhamento em Meu Universo. Os dados são somente leitura.</p>
+    <div class="panel tablewrap" id="pnList"></div>
+    <div class="section" id="pnDetail"></div>
+  </section>
+</div>
+
+<!-- ARENA DE RESPIRAÇÃO -->
+<div id="arena" role="dialog" aria-modal="true" aria-label="Prática de respiração">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="ahud">
+    <span class="apill" id="aTime">0:00</span>
+    <span style="display:flex;gap:8px;align-items:center"><button class="apill" id="aMute" style="border:0;color:inherit;cursor:pointer;min-height:36px" aria-pressed="false">🔊 Som</button><span class="apill" id="aCycle">Ciclo 1</span></span>
+  </div>
+  <div class="acenter" aria-live="polite">
+    <div id="phase">INSPIRAR</div>
+    <div id="phaseSub"></div>
+    <div id="sbar"><i></i></div>
+  </div>
+  <div class="abottom">
+    <div class="aprog" aria-hidden="true"><i id="aProg"></i></div>
+    <div class="actrls">
+      <button class="abtn main" id="aPause">Pausar</button>
+      <button class="abtn" id="aEnd">Finalizar</button>
+      <button class="abtn care" id="aCare">Estou desconfortável</button>
+    </div>
+  </div>
+  <div id="ready">
+    <div id="phase0" style="font-size:24px;font-weight:700">Pronto quando você estiver</div>
+    <p id="readyTxt">Ajuste a postura, mantenha os olhos abertos ou fechados, como preferir.</p>
+    <button class="btn big" id="aBegin">Começar</button>
+    <button class="linkbtn" id="aCancel" style="margin-top:14px">Cancelar</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="core.js"></script>
+<script src="content.js"></script>
+<script>
+(function(){
+'use strict';
+const C = window.NebulaCore, K = window.NebulaContent;
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (n,d=1) => Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+function ls(k,v){ try{ return v===undefined?localStorage.getItem(k):(v===null?localStorage.removeItem(k):localStorage.setItem(k,v)); }catch(e){ return null; } }
+function uid(){ try{ return crypto.randomUUID(); }catch(e){ return 'l'+Date.now().toString(36)+Math.random().toString(36).slice(2,10); } }
+
+/* ================= IDIOMA (estrutura pronta para internacionalização) ================= */
+const STR = {
+  pt:{ by:'Respiração guiada · FixBrain', welcome:'Um momento para respirar. Um espaço para você.', startBreath:'Começar a respirar',
+       explore:'Explorar técnicas', universe:'Meu Universo', learn:'Entenda seu corpo', safe:'Porto Seguro', settings:'Configurações',
+       inhale:'INSPIRAR', exhale:'EXPIRAR', pause:'Pausar', resume:'Retomar', paused:'PAUSADO', finish:'Finalizar', care:'Estou desconfortável',
+       softIn:'deixe o ar entrar', softOut:'deixe o ar sair', cycle:'Ciclo', of:'de', sayIn:'Inspire', sayOut:'Expire' },
+  en:{ by:'Guided breathing · FixBrain', welcome:'A moment to breathe. A space for you.', startBreath:'Start breathing',
+       explore:'Explore techniques', universe:'My Universe', learn:'Understand your body', safe:'Safe Harbor', settings:'Settings',
+       inhale:'BREATHE IN', exhale:'BREATHE OUT', pause:'Pause', resume:'Resume', paused:'PAUSED', finish:'Finish', care:'I feel uncomfortable',
+       softIn:'let the air in', softOut:'let the air out', cycle:'Cycle', of:'of', sayIn:'Breathe in', sayOut:'Breathe out' }
+};
+const t = k => (STR[cfg.lang]&&STR[cfg.lang][k]) || STR.pt[k] || k;
+function applyLang(){
+  document.documentElement.lang = cfg.lang==='en'?'en':'pt-BR';
+  $$('[data-t]').forEach(el=>{ el.textContent=t(el.dataset.t); });
+  $('#aPause').textContent=t('pause'); $('#aEnd').textContent=t('finish'); $('#aCare').textContent=t('care');
+}
+
+/* ================= PRÁTICAS ================= */
+const PINFO = {
+  diafragmatica:{ name:'Respiração diafragmática', short:'Modo principal. Respiração confortável, com o abdômen se movendo suavemente.',
+    guide:'Se quiser, apoie uma mão no abdômen. Ao inspirar, deixe a barriga se expandir sem esforço; ao expirar, deixe-a voltar. Não é preciso encher o pulmão ao máximo. Você pode usar o seu próprio ritmo.' },
+  prolongada:{ name:'Expiração prolongada', short:'Expiração um pouco mais longa que a inspiração.',
+    guide:'A sugestão inicial é inspirar em 4 segundos e expirar em 6. É só um ponto de partida: se ficar desconfortável, encurte a expiração ou volte ao seu ritmo.' },
+  lenta:{ name:'Respiração lenta e confortável', short:'Ritmo calmo e regular, sem prender o ar.',
+    guide:'Inspire e expire em tempos parecidos, devagar e sem forçar. Ajuste os tempos até encontrar um ritmo que pareça natural.' },
+  tensao:{ name:'Para momentos de tensão', short:'Sessão breve de 1 minuto, com orientações simples.',
+    guide:'Uma prática curta para quando a tensão aparece. Siga o ritmo só se ele estiver confortável. Se em algum momento não estiver, toque em “Estou desconfortável” e pare.' },
+  livre:{ name:'Respiração livre', short:'Você define os tempos e a duração.',
+    guide:'Escolha os tempos de inspiração e expiração e a duração que preferir. Sem retenção do ar.' }
+};
+const VIS = { nebulosa:'Nebulosa', circulo:'Círculo simples', estatico:'Sem animação' };
+const SOUNDS = { mar:'Mar calmo', passaros:'Pássaros', serena:'Música serena', chuva:'Chuva suave', nenhum:'Sem som' };
+
+/* ================= PREFERÊNCIAS ================= */
+const CK='nebula.config.v1';
+const reduceSys = typeof matchMedia==='function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DEFAULT_CFG = { lang:'pt', minutes:3, visual: reduceSys?'circulo':'nebulosa', intensity:0.75, sound:'mar', breathTone:true, breathSound:false, volume:0.6, numbers:true, cue:false, voice:false,
+  vibrate:false, silent:false, reduce:reduceSys, staticBg:false, checkin:true, favorites:[], personal:null, onboarded:false, rhythms:{} };
+let cfg = (()=>{ try{ return Object.assign({},DEFAULT_CFG,JSON.parse(ls(CK)||'{}')); }catch(e){ return Object.assign({},DEFAULT_CFG); } })();
+if(!cfg.soundV3){ if(!['mar','passaros','serena','chuva','nenhum'].includes(cfg.sound)) cfg.sound='mar'; cfg.breathTone=true; cfg.volume=0.6; cfg.soundV3=true; try{ localStorage.setItem(CK,JSON.stringify(cfg)); }catch(e){} }
+function saveCfg(){ ls(CK,JSON.stringify(cfg)); applyBodyPrefs(); }
+function applyBodyPrefs(){ document.body.classList.toggle('reduce',!!cfg.reduce); document.body.classList.toggle('static-bg',!!cfg.staticBg); }
+
+/* ================= BACKEND (mesma infraestrutura do Órbita) ================= */
+const SB_URL='https://dswiliptfsvmkmxsmstd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzd2lsaXB0ZnN2bWtteHNtc3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3ODk3OTMsImV4cCI6MjExMDM2NTc5M30.e2A-1tbklvkUYQUZm7BTdPyPfn9HRiKO1unSR5_5sLk';
+let sb=null, MODE='local', user=null;
+
+const Local = {
+  SK:'nebula.sessoes.v1',
+  all(){ try{ return JSON.parse(ls(this.SK)||'[]'); }catch(e){ return []; } },
+  async list(){ return this.all(); },
+  async save(s){ try{ const a=this.all(); a.push(s); ls(this.SK,JSON.stringify(a)); return true; }catch(e){ return false; } },
+  async clear(){ ls(this.SK,null); return true; },
+  fixbrainUser(){ try{ const u=JSON.parse(ls('fixbrain.usuario.v1')||'null'); return u&&u.name?u:null; }catch(e){ return null; } }
+};
+const COLS=['practice','visual','inhale_s','exhale_s','planned_s','duration_s','cycles','completed','stopped_discomfort','tension_before','tension_after'];
+const Cloud = {
+  async current(){
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session) return null;
+    let admin=false;
+    try{ const {data}=await sb.rpc('is_admin'); admin=data===true; }catch(e){}
+    if(admin) return {id:session.user.id,name:'Profissional',admin:true};
+    const {data}=await sb.from('profiles').select('name,birth_year').eq('id',session.user.id).maybeSingle();
+    if(!data) return {id:session.user.id,needsProfile:true};
+    return {id:session.user.id,name:data.name,year:data.birth_year};
+  },
+  async signIn(e,p){ const {error}=await sb.auth.signInWithPassword({email:e,password:p}); if(error) throw error; },
+  async signUp(e,p){ const {data,error}=await sb.auth.signUp({email:e,password:p}); if(error) throw error; return !!data.session; },
+  async signOut(){ try{ await sb.auth.signOut(); }catch(e){} },
+  async saveProfile(id,name,year){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year}); if(error) throw error; },
+  async list(){ const {data,error}=await sb.from('nebula_sessions').select('*').eq('user_id',user.id).order('created_at'); if(error) throw error; return data||[]; },
+  async save(s){ const row={user_id:user.id}; COLS.forEach(c=>row[c]=s[c]); const {error}=await sb.from('nebula_sessions').insert(row); return !error; },
+  async clear(){ const {error}=await sb.from('nebula_sessions').delete().eq('user_id',user.id); if(error) throw error; return true; },
+  async getShare(){ const {data}=await sb.from('nebula_settings').select('share_with_pro').eq('user_id',user.id).maybeSingle(); return !!(data&&data.share_with_pro); },
+  async setShare(v){ const {error}=await sb.from('nebula_settings').upsert({user_id:user.id,share_with_pro:v,updated_at:new Date().toISOString()}); if(error) throw error; },
+  async shared(){
+    const [a,b,c]=await Promise.all([ sb.from('nebula_settings').select('user_id').eq('share_with_pro',true), sb.from('nebula_sessions').select('*').order('created_at'), sb.from('profiles').select('id,name,birth_year') ]);
+    if(a.error||b.error||c.error) throw new Error('fetch');
+    const names={}; (c.data||[]).forEach(p=>names[p.id]=p.name);
+    const by={}; (a.data||[]).forEach(r=>by[r.user_id]=[]);
+    (b.data||[]).forEach(s=>{ if(by[s.user_id]) by[s.user_id].push(s); });
+    return {by,names};
+  }
+};
+async function detectMode(){
+  if(typeof supabase==='undefined'||!supabase.createClient) return 'local';
+  try{
+    sb=supabase.createClient(SB_URL,SB_KEY);
+    await Promise.race([ fetch(SB_URL+'/auth/v1/health',{headers:{apikey:SB_KEY}}), new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),7000)) ]);
+    return 'cloud';
+  }catch(e){ sb=null; return 'local'; }
+}
+const cloudUser = () => MODE==='cloud' && user && !user.admin && !user.needsProfile;
+const Store = () => cloudUser() ? Cloud : Local;
+function ptError(e){
+  const m=(e&&e.message)||'';
+  if(/database error saving new user|cadastro_nao_autorizado/i.test(m)) return 'Este e-mail ainda não foi autorizado. Peça o acesso à sua neuropsicóloga.';
+  if(/invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
+  if(/already registered/i.test(m)) return 'Já existe uma conta com este e-mail. Use “Entrar”.';
+  if(/at least 6/i.test(m)) return 'A senha precisa ter pelo menos 6 caracteres.';
+  if(/email not confirmed/i.test(m)) return 'Confirme seu e-mail pelo link que enviamos antes de entrar.';
+  if(/rate limit|too many/i.test(m)) return 'Muitas tentativas. Aguarde um minuto e tente de novo.';
+  if(/fetch|network|timeout/i.test(m)) return 'Sem conexão com o servidor. Tente de novo.';
+  return 'Algo deu errado: '+m;
+}
+const validYear = y => { const n=new Date().getFullYear(); return y && y>=n-110 && y<=n-4; };
+
+/* ================= NAVEGAÇÃO ================= */
+const ROUTES = { '':'v-home', praticas:'v-praticas', preparar:'v-preparar', calib:'v-calib', universo:'v-universo', entenda:'v-entenda',
+  artigo:'v-artigo', porto:'v-porto', ground:'v-ground', config:'v-config', conta:'v-conta', painel:'v-painel' };
+const FLOW = { checkin:'v-checkin', result:'v-result', care:'v-care', perfil:'v-perfil' };
+let current='';
+function show(viewId){
+  $('#loading').style.display='none';
+  $$('.view').forEach(v=>v.classList.toggle('on',v.id===viewId));
+  renderWho(); window.scrollTo(0,0);
+  const h=$('#'+viewId+' h1'); if(h){ h.setAttribute('tabindex','-1'); try{ h.focus({preventScroll:true}); }catch(e){} }
+}
+function go(route,arg){ location.hash = '#'+route+(arg?'-'+arg:''); }
+function onRoute(){
+  if($('#arena').classList.contains('on')) return;
+  const hs=(location.hash.replace(/^#\/?/,'')||''), cut=hs.indexOf('-'), r=cut<0?hs:hs.slice(0,cut), arg=cut<0?'':hs.slice(cut+1);
+  const route = ROUTES[r]!==undefined ? r : '';
+  if(route==='preparar' && !P.key){ return go('praticas'); }
+  current=route;
+  ({ '':renderHome, praticas:renderPractices, preparar:renderPrepare, calib:resetCalib, universo:renderUniverse, entenda:renderLearn,
+     artigo:()=>renderArticle(arg), porto:()=>{}, ground:()=>startGround(), config:renderSettings, conta:renderAccount, painel:renderPanel })[route]();
+  show(ROUTES[route]);
+}
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if(!b) return; e.preventDefault(); const h='#'+b.dataset.go; if(location.hash===h||(h==='#'&&!location.hash)) onRoute(); else go(b.dataset.go); });
+window.addEventListener('hashchange',onRoute);
+
+function renderWho(){
+  const w=$('#who');
+  if(MODE!=='cloud'){ w.innerHTML='<a href="../">FixBrain</a>'; return; }
+  if(user&&user.admin) w.innerHTML='<span>Profissional</span><button class="linkbtn" data-go="painel">Pacientes</button><button class="linkbtn" id="wOut">Sair</button>';
+  else if(user&&!user.needsProfile) w.innerHTML=`<span>${esc(user.name)}</span><button class="linkbtn" id="wOut">Sair</button>`;
+  else w.innerHTML='<button class="linkbtn" data-go="conta">Entrar</button><a href="../">FixBrain</a>';
+  const o=$('#wOut'); if(o) o.onclick=async()=>{ await Cloud.signOut(); user=null; go(''); onRoute(); };
+}
+
+/* ================= HOME ================= */
+function renderHome(){
+  $('#onb').hidden = !!cfg.onboarded;
+  const fav = cfg.favorites[0];
+  $('#hQuick').textContent = fav&&PINFO[fav] ? 'Favorita: '+PINFO[fav].name : PINFO.diafragmatica.name+', '+cfg.minutes+' min';
+}
+$('#hStart').onclick=()=>{ const k=(cfg.favorites[0]&&PINFO[cfg.favorites[0]])?cfg.favorites[0]:'diafragmatica'; openPractice(k); };
+$('#onbOk').onclick=$('#onbSkip').onclick=()=>{ cfg.onboarded=true; saveCfg(); $('#onb').hidden=true; };
+
+function renderPractices(){
+  const keys=Object.keys(PINFO).sort((a,b)=>(cfg.favorites.includes(b)?1:0)-(cfg.favorites.includes(a)?1:0));
+  $('#plist').innerHTML=keys.map(k=>{
+    const r=rhythmFor(k), m=k==='tensao'?1:cfg.minutes, fav=cfg.favorites.includes(k);
+    return `<div style="display:flex;gap:6px;align-items:center"><button class="pcard" data-p="${k}"><span class="t"><b>${PINFO[k].name}</b><span>${PINFO[k].short}</span></span><span class="meta">${fmt(r.inhale)} s / ${fmt(r.exhale)} s<br>${m} min</span></button><button class="fav" data-f="${k}" aria-pressed="${fav}" aria-label="${fav?'Remover dos favoritos':'Salvar como favorita'}">${fav?'★':'☆'}</button></div>`;
+  }).join('');
+  $$('[data-p]').forEach(b=>b.onclick=()=>openPractice(b.dataset.p));
+  $$('[data-f]').forEach(b=>b.onclick=()=>{ const k=b.dataset.f; cfg.favorites=cfg.favorites.includes(k)?cfg.favorites.filter(x=>x!==k):[k].concat(cfg.favorites); saveCfg(); renderPractices(); });
+}
+
+/* ================= PREPARAR ================= */
+const P = { key:null, inhale:4, exhale:6, minutes:3, visual:'nebulosa', sound:'mar' };
+function rhythmFor(k){
+  const saved=cfg.rhythms[k]; if(saved) return C.sanitizeRhythm(saved.inhale,saved.exhale);
+  if(k==='diafragmatica'&&cfg.personal) return C.sanitizeRhythm(cfg.personal.inhale,cfg.personal.exhale);
+  return C.sanitizeRhythm(C.PRACTICES[k].inhale,C.PRACTICES[k].exhale);
+}
+function openPractice(k){ P.key=k; const r=rhythmFor(k); P.inhale=r.inhale; P.exhale=r.exhale; P.minutes=k==='tensao'?1:cfg.minutes; P.visual=cfg.visual; P.sound=cfg.sound; P.soft=false; go('preparar'); }
+function renderPrepare(){
+  Snd.preload(P.sound);
+  const info=PINFO[P.key];
+  $('#pTitle').textContent=info.name; $('#pGuide').textContent=info.guide;
+  $('#pDur').innerHTML=C.DURATIONS.map(m=>`<button class="chip" data-m="${m}" aria-pressed="${m===P.minutes}">${m} min</button>`).join('');
+  $$('#pDur [data-m]').forEach(b=>b.onclick=()=>{ P.minutes=+b.dataset.m; renderPrepare(); });
+  $('#pVis').innerHTML=Object.entries(VIS).map(([k,v])=>`<button class="chip" data-v="${k}" aria-pressed="${k===P.visual}">${v}</button>`).join('');
+  $$('#pVis [data-v]').forEach(b=>b.onclick=()=>{ P.visual=b.dataset.v; renderPrepare(); });
+  $('#pSnd').innerHTML=Object.entries(SOUNDS).map(([k,v])=>`<button class="chip" data-s="${k}" aria-pressed="${k===P.sound}">${v}</button>`).join('');
+  $$('#pSnd [data-s]').forEach(b=>b.onclick=()=>{ Snd.stopPreview(); P.sound=b.dataset.s; cfg.sound=P.sound; saveCfg(); renderPrepare(); });
+  $('#pBreath').checked=!!cfg.breathSound; $('#pBreath').onchange=e=>{ cfg.breathSound=e.target.checked; saveCfg(); };
+  $('#pTone').checked=!!cfg.breathTone; $('#pTone').onchange=e=>{ cfg.breathTone=e.target.checked; saveCfg(); };
+  $('#pTestMsg').textContent = cfg.silent ? 'O modo silencioso está ligado em Configurações.' : '';
+  $('#oIn').textContent=fmt(P.inhale)+' s'; $('#oOut').textContent=fmt(P.exhale)+' s';
+  $('#pRate').textContent=`Cerca de ${fmt(60/(P.inhale+P.exhale))} respirações por minuto.`;
+  $('#pPersonalRow').hidden = P.key!=='diafragmatica' && P.key!=='livre';
+  $('#pUsePersonal').hidden = !cfg.personal;
+}
+$$('[data-st]').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.st; const r=C.sanitizeRhythm(k==='inhale'?P.inhale+(+b.dataset.d):P.inhale, k==='exhale'?P.exhale+(+b.dataset.d):P.exhale);
+  P.inhale=r.inhale; P.exhale=r.exhale; cfg.rhythms[P.key]=r; saveCfg(); renderPrepare();
+});
+$('#pCalib').onclick=()=>go('calib');
+$('#pUsePersonal').onclick=()=>{ const r=cfg.personal; P.inhale=r.inhale; P.exhale=r.exhale; cfg.rhythms[P.key]=r; saveCfg(); renderPrepare(); };
+$('#pGo').onclick=()=>{ Snd.stopPreview(); beginFlow(); };
+$('#pTest').onclick=async()=>{ const m=$('#pTestMsg');
+  if(cfg.silent){ m.textContent='O modo silencioso está ligado em Configurações.'; return; }
+  if(P.sound==='nenhum'&&!cfg.breathSound){ m.textContent='Escolha um som para ouvir.'; return; }
+  m.textContent='Carregando…'; const ok=await Snd.preview(P.sound);
+  m.textContent= ok ? 'Tocando 8 segundos: uma inspiração e uma expiração.' : 'Não foi possível tocar o som neste navegador.';
+  if(ok) setTimeout(()=>{ if(m.textContent.startsWith('Tocando')) m.textContent=''; },8300); };
+
+/* Calibração do ritmo individual */
+let taps=[], tapT0=0;
+function resetCalib(){ taps=[]; $('#cTap').textContent='Comecei a inspirar'; $('#cInfo').textContent='0 de 7 toques'; $('#cRes').textContent=''; $('#cUse').hidden=true; $('#cTap').disabled=false; }
+$('#cReset').onclick=resetCalib;
+$('#cTap').onclick=()=>{
+  const now=performance.now()/1000; if(!taps.length) tapT0=now;
+  taps.push({phase: taps.length%2===0?'in':'out', t: now-tapT0});
+  $('#cInfo').textContent=taps.length+' de 7 toques';
+  $('#cTap').textContent = taps.length%2===0 ? 'Comecei a inspirar' : 'Comecei a expirar';
+  if(taps.length>=7){
+    const r=C.calibrate(taps); $('#cTap').disabled=true;
+    if(r){ calibResult=r; $('#cRes').textContent=`Sugestão: inspirar ${fmt(r.inhale)} s e expirar ${fmt(r.exhale)} s.`; $('#cUse').hidden=false; }
+    else { $('#cRes').textContent='Não foi possível calcular. Toque em Recomeçar.'; }
+  }
+};
+let calibResult=null;
+$('#cUse').onclick=()=>{ cfg.personal=calibResult; cfg.rhythms[P.key]=calibResult; P.inhale=calibResult.inhale; P.exhale=calibResult.exhale; saveCfg(); go('preparar'); };
+
+/* ================= CHECK-IN / CHECK-OUT ================= */
+let S=null; // sessão em andamento
+let ckVal=null, ckDone=null;
+function askTension(title,cb){
+  ckVal=null; ckDone=cb; $('#ckTitle').textContent=title;
+  $('#ckScale').innerHTML=Array.from({length:11},(_,i)=>`<button data-v="${i}" aria-pressed="false" aria-label="${i}">${i}</button>`).join('');
+  $$('#ckScale [data-v]').forEach(b=>b.onclick=()=>{ ckVal=+b.dataset.v; $$('#ckScale [data-v]').forEach(x=>x.setAttribute('aria-pressed',x===b)); $('#ckNext').disabled=false; });
+  $('#ckNext').disabled=true; show(FLOW.checkin);
+}
+$('#ckNext').onclick=()=>{ const f=ckDone; ckDone=null; f&&f(ckVal); };
+$('#ckSkip').onclick=()=>{ const f=ckDone; ckDone=null; f&&f(null); };
+
+function beginFlow(){
+  S={ id:uid(), practice:P.key, visual:P.visual, inhale_s:P.inhale, exhale_s:P.exhale, planned_s:P.minutes*60, soft:!!P.soft, sound:P.sound||cfg.sound,
+      tension_before:null, tension_after:null, stopped_discomfort:false, completed:false, cycles:0, duration_s:0 };
+  if(cfg.checkin && !P.soft && !P.look) askTension('Como você está se sentindo agora?', v=>{ S.tension_before=v; openArena(); });
+  else openArena();
+}
+
+/* ================= ÁUDIO =================
+   Sons ambientes gravados como arquivos do próprio módulo (nebula/sons/), gerados por sons/gerar_sons.py:
+   mar, música em afinação justa (sem batimentos) e chuva. Volume sempre entra e sai em rampa.
+   "Acompanhar a respiração": o som se abre um pouco ao inspirar e recua ao expirar, sem mudar de altura. */
+const Snd = {
+  ctx:null, bus:null, amb:null, bufs:{}, muted:false,
+  FILES:{ mar:'sons/mar.mp3', passaros:'sons/passaros.mp3', serena:'sons/serena.mp3', chuva:'sons/chuva.mp3' },
+  ensure(){ if(cfg.silent) return null; try{
+      if(!this.ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; this.ctx=new AC(); this.bus=this.ctx.createGain(); this.bus.gain.value=this.level(); this.bus.connect(this.ctx.destination); }
+      if(this.ctx.state==='suspended') this.ctx.resume();
+    }catch(e){ return null; } return this.ctx; },
+  level(){ return this.muted?0:Math.max(0,Math.min(1,cfg.volume))*0.9; },
+  applyVolume(){ if(this.bus&&this.ctx){ const n=this.ctx.currentTime; this.bus.gain.cancelScheduledValues(n); this.bus.gain.setValueAtTime(this.bus.gain.value,n); this.bus.gain.linearRampToValueAtTime(this.level(),n+0.6); } },
+  setMuted(m){ this.muted=m; this.applyVolume(); if(m){ try{ speechSynthesis.cancel(); }catch(e){} } },
+  load(kind){
+    if(!this.FILES[kind]) return Promise.resolve(null);
+    if(this.bufs[kind]) return this.bufs[kind];
+    const ctx=this.ensure(); if(!ctx) return Promise.resolve(null);
+    this.bufs[kind]=fetch(this.FILES[kind]).then(r=>{ if(!r.ok) throw new Error('http'); return r.arrayBuffer(); })
+      .then(a=>new Promise((ok,ko)=>ctx.decodeAudioData(a,ok,ko))).catch(()=>{ delete this.bufs[kind]; return null; });
+    return this.bufs[kind];
+  },
+  preload(kind){ if(!cfg.silent&&this.FILES[kind]&&this.ctx) this.load(kind); },
+  async startAmbient(kind){
+    this.stopAmbient(); if(cfg.silent||!this.FILES[kind]) return; const ctx=this.ensure(); if(!ctx) return;
+    const token={}; this.amb=token;
+    const buf=await this.load(kind); if(!buf||this.amb!==token) return;
+    const out=ctx.createGain(); out.gain.value=0; out.connect(this.bus);
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value={serena:1400,passaros:5000}[kind]||2600; lp.Q.value=0.3; lp.connect(out);
+    const swell=ctx.createGain(); swell.gain.value=0.85; swell.connect(lp);
+    out.gain.linearRampToValueAtTime(1, ctx.currentTime+3.5);
+    Object.assign(token,{kind,out,lp,swell,srcs:[],timer:0});
+    // Cada cópia do arquivo se sobrepõe à seguinte por 4 s: o som nunca para nem estala na volta.
+    const XF=4, TRIM=0.12, play=(when)=>{
+      if(this.amb!==token) return;
+      const src=ctx.createBufferSource(); src.buffer=buf; const g=ctx.createGain(); src.connect(g); g.connect(swell);
+      const len=buf.duration-2*TRIM;
+      g.gain.setValueAtTime(0,when); g.gain.linearRampToValueAtTime(1,when+XF); g.gain.setValueAtTime(1,when+len-XF); g.gain.linearRampToValueAtTime(0,when+len);
+      src.start(when,TRIM,len); token.srcs.push(src); if(token.srcs.length>3) token.srcs.shift();
+      const next=when+len-XF; token.timer=setTimeout(()=>play(next),Math.max(0,(next-ctx.currentTime-2)*1000));
+    };
+    play(ctx.currentTime+0.05);
+  },
+  stopAmbient(){ const a=this.amb; this.amb=null; if(!a||!a.out||!this.ctx) return; clearTimeout(a.timer); const n=this.ctx.currentTime;
+    try{ a.out.gain.cancelScheduledValues(n); a.out.gain.setValueAtTime(a.out.gain.value,n); a.out.gain.linearRampToValueAtTime(0,n+1.5); }catch(e){}
+    setTimeout(()=>{ a.srcs.forEach(s=>{ try{ s.stop(); }catch(e){} }); try{ a.out.disconnect(); }catch(e){} },1700); },
+  follow(lv){ const a=this.amb; if(!a||!a.lp||!cfg.breathTone||!this.ctx) return; const n=this.ctx.currentTime;
+    const RG={serena:[900,2400],passaros:[3500,8000]}, [lo,hi]=RG[a.kind]||[1300,5200];
+    a.lp.frequency.setTargetAtTime(lo+(hi-lo)*lv,n,0.25); a.swell.gain.setTargetAtTime(0.72+0.28*lv,n,0.25); },
+  rest(){ const a=this.amb; if(a&&a.lp&&this.ctx){ a.lp.frequency.setTargetAtTime({serena:1400,passaros:5000}[a.kind]||2600,this.ctx.currentTime,0.6); a.swell.gain.setTargetAtTime(0.85,this.ctx.currentTime,0.6); } },
+  /* Som de respiração: duas texturas gravadas (sons/inspirar.wav e sons/expirar.wav, geradas por gerar_respiracao.py)
+     com ressonâncias do nariz (inspirar) e da boca relaxada (expirar). O volume segue curvas suaves no tempo exato de cada fase. */
+  CURVE:{
+    in:(x)=> x<0.97 ? Math.pow(Math.sin(Math.PI*Math.pow(Math.min(1,x/0.97),0.85)),1.4) : 0,
+    out:(x)=> x<0.28 ? Math.pow(Math.sin(Math.PI/2*x/0.28),2) : x<0.95 ? Math.pow((1+Math.cos(Math.PI*(x-0.28)/0.67))/2,1.3) : 0
+  },
+  async startBreath(){ this.stopBreath(); if(!cfg.breathSound||cfg.silent) return; const ctx=this.ensure(); if(!ctx) return;
+    const token={}; this.br=token;
+    const load=f=>{ const k='br:'+f; if(!this.bufs[k]) this.bufs[k]=fetch('sons/'+f).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); }).then(a=>new Promise((ok,ko)=>ctx.decodeAudioData(a,ok,ko))).catch(()=>{ delete this.bufs[k]; return null; }); return this.bufs[k]; };
+    const [bi,be]=await Promise.all([load('inspirar.wav'),load('expirar.wav')]); if(!bi||!be||this.br!==token) return;
+    const mk=(buf)=>{ const s=ctx.createBufferSource(); s.buffer=buf; s.loop=true; const g=ctx.createGain(); g.gain.value=0; s.connect(g); g.connect(this.bus); s.start(); return {s,g}; };
+    Object.assign(token,{i:mk(bi),e:mk(be),ready:true});
+    if(token.pending){ const p=token.pending; this.breathPhase(p[0],p[1]-(ctx.currentTime-p[2])); } },
+  breathPhase(phase,d){ const b=this.br; if(!b||!this.ctx) return; const n=this.ctx.currentTime;
+    if(!b.ready){ b.pending=[phase,d,n]; return; } if(d<0.3) return;
+    const pts=32, shape=this.CURVE[phase], peak=phase==='in'?0.42:0.5, on=phase==='in'?b.i:b.e, off=phase==='in'?b.e:b.i;
+    const arr=new Float32Array(pts); for(let k=0;k<pts;k++) arr[k]=Math.max(0.00001,shape(k/(pts-1))*peak);
+    [on,off].forEach(v=>{ v.g.gain.cancelScheduledValues(n); v.g.gain.setValueAtTime(v.g.gain.value,n); });
+    off.g.gain.linearRampToValueAtTime(0,n+0.25);
+    for(let k=1;k<pts;k++) on.g.gain.linearRampToValueAtTime(arr[k],n+0.01+(d-0.02)*k/(pts-1)); },
+  quietBreath(){ const b=this.br; if(!b||!b.ready||!this.ctx) return; const n=this.ctx.currentTime;
+    [b.i,b.e].forEach(v=>{ v.g.gain.cancelScheduledValues(n); v.g.gain.setValueAtTime(v.g.gain.value,n); v.g.gain.linearRampToValueAtTime(0,n+0.4); }); },
+  stopBreath(){ const b=this.br; this.br=null; if(!b||!b.ready||!this.ctx) return; const n=this.ctx.currentTime;
+    [b.i,b.e].forEach(v=>{ v.g.gain.cancelScheduledValues(n); v.g.gain.setValueAtTime(v.g.gain.value,n); v.g.gain.linearRampToValueAtTime(0,n+0.4); });
+    setTimeout(()=>{ [b.i,b.e].forEach(v=>{ try{ v.s.stop(); v.g.disconnect(); }catch(e){} }); },600); },
+  chime(phase){ if(!cfg.cue||cfg.silent||this.muted) return; const ctx=this.ensure(); if(!ctx) return;
+    const n=ctx.currentTime, f=phase==='in'?392:329.63;
+    [1,2].forEach((m,i)=>{ const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.value=f*m; g.gain.value=0;
+      o.connect(g); g.connect(this.bus); g.gain.linearRampToValueAtTime(i?0.008:0.035,n+0.3); g.gain.exponentialRampToValueAtTime(0.0001,n+2.6); o.start(n); o.stop(n+2.7); }); },
+  say(phase){ if(!cfg.voice||cfg.silent||this.muted||!('speechSynthesis' in window)) return; try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t(phase==='in'?'sayIn':'sayOut')); u.lang=cfg.lang==='en'?'en-US':'pt-BR'; u.rate=0.75; u.pitch=0.9; u.volume=Math.max(0.2,cfg.volume); speechSynthesis.speak(u); }catch(e){} },
+  buzz(){ if(cfg.vibrate&&navigator.vibrate){ try{ navigator.vibrate(35); }catch(e){} } },
+  /* Amostra de 8 s: uma inspiração e uma expiração de 4 s. */
+  async preview(kind){ const ctx=this.ensure(); if(!ctx) return false; this.setMuted(false); clearInterval(this._pv); clearTimeout(this._pvb);
+    if(this.FILES[kind]){ await this.startAmbient(kind); if(!this.amb||!this.amb.out) return false; }
+    else if(!cfg.breathSound) return false;
+    await this.startBreath(); this.breathPhase('in',4); this._pvb=setTimeout(()=>this.breathPhase('out',4),4000);
+    const t0=performance.now();
+    this._pv=setInterval(()=>{ const s=(performance.now()-t0)/1000; this.follow(s<4?(1-Math.cos(Math.PI*s/4))/2:(1+Math.cos(Math.PI*Math.min(s-4,4)/4))/2); if(s>8){ clearInterval(this._pv); this.stopAmbient(); this.stopBreath(); } },60);
+    return true; },
+  stopPreview(){ clearInterval(this._pv); clearTimeout(this._pvb); this.stopAmbient(); this.stopBreath(); }
+};
+
+/* ================= ARENA ================= */
+const cv=$('#sky'); const g2=cv.getContext('2d');
+let A=null, stars=[], parts=[], W=0, H=0, DPR=1;
+function sizeCanvas(){ DPR=Math.min(window.devicePixelRatio||1,2); W=cv.clientWidth; H=cv.clientHeight; cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); g2.setTransform(DPR,0,0,DPR,0,0);
+  const n=Math.round(Math.min(160,W*H/7000)); stars=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+0.3,a:Math.random()*0.6+0.25,ph:Math.random()*6.28}));
+  parts=Array.from({length:70},()=>({ang:Math.random()*6.28,f:0.55+Math.random()*0.95,r:Math.random()*1.6+0.5,sp:(Math.random()*0.5+0.2)*(Math.random()<.5?-1:1),a:Math.random()*0.6+0.25})); }
+window.addEventListener('resize',()=>{ if($('#arena').classList.contains('on')){ sizeCanvas(); if(A&&A.clock.isPaused()) draw(A.level||0,A.t||0); } });
+
+function openArena(){
+  const ar=$('#arena'); ar.classList.add('on'); ar.classList.toggle('static',S.visual==='estatico'); document.body.style.overflow='hidden';
+  sizeCanvas();
+  A={ clock:new C.Clock(), plan:C.plannedEnd(S.planned_s,S.inhale_s,S.exhale_s), lastPhase:null, raf:0, level:0, t:0, look:!!P.look };
+  $('#ready').hidden=false;
+  $('#phase0').textContent = A.look?'Observar o céu':'Pronto quando você estiver';
+  $('#readyTxt').textContent = A.look ? 'Nada a fazer aqui. Só olhar, pelo tempo que quiser. Toque em Finalizar quando quiser sair.'
+    : S.soft ? 'Sem números e sem som. O círculo cresce e diminui devagar; acompanhe se e quando quiser.'
+    : 'Ajuste a postura e mantenha os olhos abertos ou fechados, como preferir. Respire sem forçar.';
+  $('#aBegin').focus();
+  draw(0,0); hudIdle();
+}
+function hudIdle(){ $('#phase').textContent=''; $('#phaseSub').textContent=''; $('#aTime').textContent=A.look?'':C.fmtClock(A.plan.seconds); $('#aCycle').textContent=A.look?'':`${t('cycle')} 1 ${t('of')} ${A.plan.cycles}`; $('#aProg').style.width='0'; $('#aPause').textContent=t('pause'); $('#aPause').hidden=A.look; $('#aCare').hidden=A.look; Snd.setMuted(false); $('#aMute').hidden = A.look||S.soft||cfg.silent||(S.sound==='nenhum'&&!cfg.cue&&!cfg.voice&&!cfg.breathSound); muteLabel(); }
+function muteLabel(){ $('#aMute').textContent=Snd.muted?'🔇 Sem som':'🔊 Som'; $('#aMute').setAttribute('aria-pressed',Snd.muted); $('#aMute').setAttribute('aria-label',Snd.muted?'Ligar o som':'Silenciar'); }
+$('#aMute').onclick=()=>{ Snd.ensure(); Snd.setMuted(!Snd.muted); muteLabel(); };
+$('#aBegin').onclick=()=>{
+  $('#ready').hidden=true;
+  if(!S.soft && !A.look){ Snd.startAmbient(S.sound); Snd.startBreath(); } else Snd.ensure();
+  A.clock.start(); A.raf=requestAnimationFrame(tick);
+};
+$('#aCancel').onclick=()=>{ closeArena(); go(current||''); onRoute(); };
+function closeArena(){ if(A) cancelAnimationFrame(A.raf); Snd.stopAmbient(); Snd.stopBreath(); try{ speechSynthesis.cancel(); }catch(e){} $('#arena').classList.remove('on'); document.body.style.overflow=''; }
+
+function tick(){
+  if(!A) return;
+  A.raf=requestAnimationFrame(tick);
+  if(A.clock.isPaused()) return;
+  const tt=A.clock.elapsed(); A.t=tt;
+  if(A.look){ draw(0.5,tt); $('#aTime').textContent=C.fmtClock(tt); return; }
+  if(tt>=A.plan.seconds){ endArena(true); return; }
+  const ph=C.phaseAt(tt,S.inhale_s,S.exhale_s), lv=C.breathLevel(ph); A.level=lv;
+  if(ph.phase!==A.lastPhase){ A.lastPhase=ph.phase; $('#phase').textContent=t(ph.phase==='in'?'inhale':'exhale'); if(!S.soft){ Snd.breathPhase(ph.phase,ph.remaining); Snd.chime(ph.phase); Snd.say(ph.phase); Snd.buzz(); } }
+  $('#phaseSub').textContent = (cfg.numbers && !S.soft) ? String(Math.ceil(ph.remaining)) : t(ph.phase==='in'?'softIn':'softOut');
+  $('#aTime').textContent=C.fmtClock(A.plan.seconds-tt);
+  $('#aCycle').textContent=`${t('cycle')} ${Math.min(ph.cycle+1,A.plan.cycles)} ${t('of')} ${A.plan.cycles}`;
+  $('#aProg').style.width=(tt/A.plan.seconds*100).toFixed(2)+'%';
+  $('#sbar i').style.width=(lv*100).toFixed(1)+'%';
+  if(!S.soft) Snd.follow(lv);
+  draw(lv,tt);
+}
+function draw(lv,tt){
+  g2.clearRect(0,0,W,H);
+  const vis=S?S.visual:'nebulosa', motion=!cfg.reduce, I=cfg.intensity;
+  if(vis==='estatico') return;
+  const cx=W/2, cy=H*0.47;
+  // estrelas
+  for(const s of stars){ const a=motion?s.a*(0.75+0.25*Math.sin(tt*0.8+s.ph)):s.a; g2.globalAlpha=a; g2.fillStyle='#F5F6FF'; g2.beginPath(); g2.arc(s.x,s.y,s.r,0,6.283); g2.fill(); }
+  g2.globalAlpha=1;
+  const R=Math.min(W,H)*0.25;
+  if(vis==='circulo'){
+    const r=R*(0.5+0.6*lv);
+    g2.fillStyle=`rgba(199,184,255,${0.10+0.10*I})`; g2.beginPath(); g2.arc(cx,cy,r,0,6.283); g2.fill();
+    g2.lineWidth=3; g2.strokeStyle=`rgba(117,217,208,${0.5+0.4*I})`; g2.stroke();
+    return;
+  }
+  const r=R*(0.6+0.62*lv), rot=motion?tt*0.035:0;
+  g2.globalCompositeOperation='lighter';
+  const cols=[[136,104,217],[52,59,131],[199,184,255],[117,217,208],[136,104,217]];
+  for(let k=0;k<5;k++){
+    const a=rot+k*1.2566, d=r*0.3, x=cx+Math.cos(a)*d, y=cy+Math.sin(a)*d*0.8, rr=r*(k%2?0.95:1.12), c=cols[k];
+    const gr=g2.createRadialGradient(x,y,0,x,y,rr);
+    gr.addColorStop(0,`rgba(${c},${0.30*I})`); gr.addColorStop(0.5,`rgba(${c},${0.12*I})`); gr.addColorStop(1,`rgba(${c},0)`);
+    g2.fillStyle=gr; g2.beginPath(); g2.arc(x,y,rr,0,6.283); g2.fill();
+  }
+  const core=g2.createRadialGradient(cx,cy,0,cx,cy,r*0.45);
+  core.addColorStop(0,`rgba(245,246,255,${0.55*I+0.15*lv})`); core.addColorStop(1,'rgba(245,246,255,0)');
+  g2.fillStyle=core; g2.beginPath(); g2.arc(cx,cy,r*0.45,0,6.283); g2.fill();
+  for(const p of parts){ const a=p.ang+(motion?tt*0.06*p.sp:0), pr=r*p.f; g2.globalAlpha=p.a*I; g2.fillStyle='#F5F6FF'; g2.beginPath(); g2.arc(cx+Math.cos(a)*pr,cy+Math.sin(a)*pr*0.82,p.r,0,6.283); g2.fill(); }
+  g2.globalAlpha=1; g2.globalCompositeOperation='source-over';
+}
+function togglePause(){
+  if(!A||!$('#ready').hidden) return;
+  if(A.clock.isPaused()){ A.clock.resume(); $('#aPause').textContent=t('pause'); A.lastPhase=null; }
+  else{ A.clock.pause(); $('#aPause').textContent=t('resume'); $('#phase').textContent=t('paused'); $('#phaseSub').textContent=''; Snd.rest(); Snd.quietBreath(); try{ speechSynthesis.cancel(); }catch(e){} }
+}
+$('#aPause').onclick=togglePause;
+$('#aEnd').onclick=()=>endArena(false);
+$('#aCare').onclick=()=>endArena(false,true);
+document.addEventListener('keydown',e=>{ if(!$('#arena').classList.contains('on')||!$('#ready').hidden) return; if(e.code==='Space'){ e.preventDefault(); togglePause(); } else if(e.key==='Escape'){ endArena(false); } });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden&&A&&$('#arena').classList.contains('on')&&$('#ready').hidden&&!A.clock.isPaused()&&!A.look) togglePause(); });
+
+function endArena(completed,discomfort){
+  if(!A) return;
+  const tt=Math.min(A.clock.elapsed(),A.plan.seconds), look=A.look;
+  closeArena();
+  const cyc=C.completedCycles(tt,S.inhale_s,S.exhale_s);
+  S.duration_s=Math.round(tt); S.cycles=Math.min(cyc,A.plan.cycles); S.completed=!!completed; S.stopped_discomfort=!!discomfort;
+  A=null; P.look=false;
+  if(look){ go('porto'); onRoute(); return; }
+  if(discomfort){ saveSession(); show(FLOW.care); return; }
+  if(cfg.checkin && !S.soft) askTension('Como você está se sentindo neste momento?', v=>{ S.tension_after=v; finishFlow(); });
+  else finishFlow();
+}
+let lastSave={ok:true,where:'local'};
+async function saveSession(){
+  if(S.duration_s<5){ lastSave={ok:false,skipped:true}; return; }
+  const rec={ id:S.id, created_at:new Date().toISOString(), practice:S.practice, visual:S.visual, inhale_s:S.inhale_s, exhale_s:S.exhale_s,
+    planned_s:S.planned_s, duration_s:S.duration_s, cycles:S.cycles, completed:S.completed, stopped_discomfort:S.stopped_discomfort,
+    tension_before:cfg.checkin?S.tension_before:null, tension_after:cfg.checkin?S.tension_after:null };
+  if(cloudUser()){
+    let ok=false; try{ ok=await Cloud.save(rec); }catch(e){}
+    if(ok){ lastSave={ok:true,where:'cloud'}; return; }
+    await Local.save(rec); lastSave={ok:true,where:'local',fallback:true}; return;
+  }
+  lastSave={ok:await Local.save(rec),where:'local'};
+}
+async function finishFlow(){
+  await saveSession();
+  const m=C.tensionMessage(S.tension_before,S.tension_after);
+  let h;
+  if(m.kind==='none') h='<h2>Obrigado por dedicar esse tempo a você.</h2><p class="hint">Sem registro de tensão nesta sessão.</p>';
+  else{
+    h=`<p class="hint">Tensão relatada</p><div class="compare">Antes: ${S.tension_before} · Depois: ${S.tension_after}</div>`;
+    if(m.kind==='down') h+=`<p>Você percebeu uma redução de ${m.diff} ${m.diff===1?'ponto':'pontos'} na tensão relatada.</p>`;
+    else if(m.kind==='same') h+='<p>A tensão relatada ficou igual. Isso é comum e faz parte: cada prática é diferente, e o simples fato de parar um momento já conta.</p>';
+    else h+='<p>A tensão relatada aumentou um pouco. Tudo bem — nem toda prática traz alívio imediato. Se isso se repetir, experimente um ritmo mais lento, o visual simples ou o Porto Seguro, e converse com sua psicóloga ou psicólogo.</p>';
+    h+='<p class="hint">Este é um registro do que você percebeu agora, não uma medida clínica.</p>';
+  }
+  $('#rTension').innerHTML=h;
+  $('#rStats').innerHTML=[[C.fmtClock(S.duration_s),'duração'],[S.cycles,'ciclos completos'],[`${fmt(S.inhale_s)} / ${fmt(S.exhale_s)} s`,'inspirar / expirar']].map(([v,k])=>`<div class="stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('');
+  $('#rSaved').textContent = lastSave.skipped ? 'Sessão muito curta: não foi registrada no histórico.' :
+    !lastSave.ok ? 'Não foi possível salvar esta sessão neste aparelho.' :
+    lastSave.where==='cloud' ? 'Uma nova estrela no seu universo. Sessão salva na sua conta do FixBrain.' :
+    lastSave.fallback ? 'Sem conexão com o servidor: sessão salva só neste navegador.' : 'Uma nova estrela no seu universo. Sessão salva neste navegador.';
+  show(FLOW.result);
+}
+$('#rAgain').onclick=()=>{ P.soft=false; beginFlow(); };
+
+/* ================= MEU UNIVERSO ================= */
+let uData=[];
+async function renderUniverse(){
+  $('#uSky').innerHTML='<p class="empty" style="padding:20px">Carregando…</p>';
+  try{ uData=await Store().list(); }catch(e){ uData=[]; $('#uSky').innerHTML='<p class="empty" style="padding:20px">Não foi possível carregar o histórico. Verifique a conexão.</p>'; }
+  const st=C.stats(uData);
+  // constelação
+  const done=uData.filter(s=>s.completed||s.duration_s>=30).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  const Wv=800,Hv=360; let svg=`<svg viewBox="0 0 ${Wv} ${Hv}" role="img" aria-label="Constelação com ${done.length} estrelas">`;
+  for(let i=0;i<60;i++){ const p=C.starFor('bg',i); svg+=`<circle cx="${(p.x*Wv).toFixed(1)}" cy="${(p.y*Hv).toFixed(1)}" r="0.9" fill="#F5F6FF" opacity="0.25"/>`; }
+  const pts=done.map((s,i)=>{ const p=C.starFor(s.id||s.created_at,i); return [p.x*Wv,p.y*Hv]; });
+  if(pts.length>1) svg+=`<polyline fill="none" stroke="#C7B8FF" stroke-opacity="0.22" stroke-width="1" points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}"/>`;
+  pts.forEach((p,i)=>{ const recent=i>=pts.length-3; svg+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${recent?9:6}" fill="url(#glow)"/><circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${recent?2.6:1.9}" fill="#F5F6FF"/>`; });
+  svg+='<defs><radialGradient id="glow"><stop offset="0" stop-color="#C7B8FF" stop-opacity=".8"/><stop offset="1" stop-color="#8868D9" stop-opacity="0"/></radialGradient></defs>';
+  if(!pts.length) svg+=`<text x="${Wv/2}" y="${Hv/2}" text-anchor="middle" fill="#B4B6D6" font-size="18">Seu universo começa na primeira prática.</text>`;
+  $('#uSky').innerHTML=svg+'</svg>';
+  const top=st.topPractice?PINFO[st.topPractice].name:'–';
+  $('#uStats').innerHTML=[[st.count,'práticas'],[Math.round(st.totalSeconds/60)+' min','tempo total'],[st.last7,'nos últimos 7 dias'],[top,'mais usada']].map(([v,k])=>`<div class="stat"><div class="v" style="${String(v).length>10?'font-size:18px':''}">${esc(v)}</div><div class="k">${k}</div></div>`).join('');
+  $('#uWeeks').innerHTML=barChart(st.weeks);
+  $('#uTenWrap').hidden=!st.pairs.length;
+  if(st.pairs.length) $('#uTension').innerHTML=tensionChart(st.pairs);
+  $('#uList').innerHTML = uData.length ? '<table><thead><tr><th>Data</th><th>Prática</th><th class="num">Duração</th><th class="num">Ritmo</th><th class="num">Tensão</th><th></th></tr></thead><tbody>'+
+    uData.slice().reverse().map(s=>`<tr><td>${new Date(s.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</td><td>${esc((PINFO[s.practice]||{}).name||s.practice)}</td><td class="num">${C.fmtClock(s.duration_s)}</td><td class="num">${fmt(s.inhale_s)}/${fmt(s.exhale_s)} s</td><td class="num">${s.tension_before??'–'} → ${s.tension_after??'–'}</td><td>${s.stopped_discomfort?'interrompida':''}</td></tr>`).join('')+'</tbody></table>'
+    : '<p class="empty">Nenhuma prática registrada ainda.</p>';
+  $('#uWhere').textContent = cloudUser() ? 'Seu histórico do NEBULA fica na sua conta do FixBrain, protegido por login. Só você vê, a menos que ligue o compartilhamento acima.' :
+    'Seu histórico fica salvo apenas neste navegador. Entre com sua conta do FixBrain para guardá-lo com segurança e acessá-lo em outros aparelhos.';
+  $('#uShare').hidden=!cloudUser(); $('#uShareMsg').textContent='';
+  if(cloudUser()){ try{ $('#uShareBox').checked=await Cloud.getShare(); }catch(e){} }
+  $('#uDelMsg').className='err'; $('#uDelMsg').textContent=''; delArmed=false; $('#uDel').textContent='Apagar histórico';
+}
+function barChart(weeks){
+  const W=640,H=200,L=36,B=30,T=14,mx=Math.max(5,...weeks.map(w=>w.minutes)), bw=(W-L-10)/weeks.length;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Minutos de prática por semana">`;
+  [0,mx/2,mx].forEach(v=>{ const y=T+(H-T-B)*(1-v/mx); s+=`<line x1="${L}" x2="${W-6}" y1="${y}" y2="${y}" stroke="rgba(199,184,255,.15)"/><text x="${L-6}" y="${y+4}" font-size="12" text-anchor="end" fill="#B4B6D6">${Math.round(v)}</text>`; });
+  weeks.forEach((w,i)=>{ const h=(H-T-B)*w.minutes/mx, x=L+i*bw+bw*0.2; s+=`<rect x="${x.toFixed(1)}" y="${(H-B-h).toFixed(1)}" width="${(bw*0.6).toFixed(1)}" height="${Math.max(h,0).toFixed(1)}" rx="4" fill="#8868D9"/><text x="${(x+bw*0.3).toFixed(1)}" y="${H-10}" font-size="11" text-anchor="middle" fill="#B4B6D6">${w.start.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}</text>`; });
+  return s+'</svg>';
+}
+function tensionChart(pairs){
+  const list=pairs.slice(-20), W=640,H=220,L=30,R=12,T=14,B=28, x=i=>L+(W-L-R)*(list.length===1?0.5:i/(list.length-1)), y=v=>T+(H-T-B)*(1-v/10);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Tensão relatada antes e depois das últimas sessões">`;
+  [0,5,10].forEach(v=>{ s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="rgba(199,184,255,.15)"/><text x="${L-6}" y="${y(v)+4}" font-size="12" text-anchor="end" fill="#B4B6D6">${v}</text>`; });
+  list.forEach((p,i)=>{ s+=`<line x1="${x(i)}" x2="${x(i)}" y1="${y(p.tension_before)}" y2="${y(p.tension_after)}" stroke="rgba(245,246,255,.35)" stroke-width="2"/><circle cx="${x(i)}" cy="${y(p.tension_before)}" r="5" fill="#C7B8FF"/><circle cx="${x(i)}" cy="${y(p.tension_after)}" r="5" fill="#75D9D0"/>`; });
+  s+=`<circle cx="${L+4}" cy="${H-8}" r="5" fill="#C7B8FF"/><text x="${L+14}" y="${H-4}" font-size="12" fill="#B4B6D6">antes</text><circle cx="${L+70}" cy="${H-8}" r="5" fill="#75D9D0"/><text x="${L+80}" y="${H-4}" font-size="12" fill="#B4B6D6">depois</text>`;
+  return s+'</svg>';
+}
+function download(name,text,type){
+  try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500); }
+  catch(e){ $('#uDelMsg').textContent='Não foi possível baixar o arquivo neste navegador.'; }
+}
+const stamp=()=>new Date().toISOString().slice(0,10);
+$('#uCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText(C.toCSV(uData)); $('#uDelMsg').className='okmsg'; $('#uDelMsg').textContent='Dados copiados em formato de planilha (CSV). Cole numa planilha ou num e-mail.'; }catch(e){ $('#uDelMsg').className='err'; $('#uDelMsg').textContent='Não foi possível copiar neste navegador.'; } };
+$('#uCsv').onclick=()=>download(`nebula-historico-${stamp()}.csv`,'﻿'+C.toCSV(uData),'text/csv;charset=utf-8');
+$('#uJson').onclick=()=>download(`nebula-historico-${stamp()}.json`,JSON.stringify(uData.map(s=>{ const o={}; ['created_at'].concat(COLS).forEach(c=>o[c]=s[c]); return o; }),null,2),'application/json');
+let delArmed=false;
+$('#uDel').onclick=async()=>{
+  if(!delArmed){ delArmed=true; $('#uDel').textContent='Confirmar: apagar tudo'; $('#uDelMsg').textContent='Isto apaga definitivamente todo o histórico do NEBULA '+(cloudUser()?'da sua conta':'deste navegador')+'. Toque de novo para confirmar.'; return; }
+  try{ await Store().clear(); await renderUniverse(); $('#uDelMsg').textContent='Histórico apagado.'; }
+  catch(e){ $('#uDelMsg').textContent='Não foi possível apagar. Tente de novo.'; }
+};
+$('#uShareBox').onchange=async e=>{
+  const v=e.target.checked; $('#uShareMsg').textContent='Salvando…';
+  try{ await Cloud.setShare(v); $('#uShareMsg').textContent=v?'Compartilhamento ligado.':'Compartilhamento desligado. A profissional não vê mais suas práticas do NEBULA.'; }
+  catch(err){ e.target.checked=!v; $('#uShareMsg').textContent='Não foi possível salvar. Tente de novo.'; }
+};
+
+/* ================= ENTENDA SEU CORPO ================= */
+function renderLearn(){
+  $('#aList').innerHTML=K.ARTICLES.map((a,i)=>`<button class="pcard" data-go="artigo-${a.id}"><span class="t"><b>${i+1}. ${esc(a.title)}</b><span>${a.refs.length} ${a.refs.length===1?'referência':'referências'}</span></span><span class="meta">ler →</span></button>`).join('');
+}
+function renderArticle(id){
+  const a=K.ARTICLES.find(x=>x.id===id)||K.ARTICLES[0];
+  $('#aBody').innerHTML=`<h1>${esc(a.title)}</h1>`+a.body.map(p=>`<p>${p}</p>`).join('')+'<h3 style="margin-top:26px">Referências</h3><ol class="refs">'+a.refs.map(r=>`<li>${esc(r)}</li>`).join('')+'</ol><p class="hint">Conteúdo psicoeducativo. Não substitui avaliação ou acompanhamento profissional.</p>';
+}
+
+/* ================= PORTO SEGURO ================= */
+let gi=0;
+function startGround(){ gi=0; drawGround(); }
+function drawGround(){ const s=K.GROUNDING[gi]; $('#gN').textContent=s.n; $('#gText').innerHTML=s.text; $('#gNext').textContent=gi<K.GROUNDING.length-1?'Próximo':'Concluir'; }
+$('#gNext').onclick=()=>{ if(gi<K.GROUNDING.length-1){ gi++; drawGround(); } else go('porto'); };
+$('#psGround').onclick=()=>go('ground');
+$('#psSoft').onclick=()=>{ P.key='lenta'; const r=rhythmFor('lenta'); P.inhale=r.inhale; P.exhale=r.exhale; P.minutes=3; P.visual='circulo'; P.soft=true; P.look=false; beginFlow(); };
+$('#psLook').onclick=()=>{ P.key='lenta'; P.inhale=5; P.exhale=5; P.minutes=15; P.visual=cfg.reduce?'circulo':'nebulosa'; P.soft=true; P.look=true;
+  S={ id:uid(), practice:'lenta', visual:P.visual, inhale_s:5, exhale_s:5, planned_s:900, soft:true }; openArena(); };
+
+/* ================= CONFIGURAÇÕES ================= */
+function chips(sel,obj,curr,onPick){ $(sel).innerHTML=Object.entries(obj).map(([k,v])=>`<button class="chip" data-k="${k}" aria-pressed="${String(k)===String(curr)}">${v}</button>`).join(''); $$(sel+' [data-k]').forEach(b=>b.onclick=()=>{ onPick(b.dataset.k); renderSettings(); }); }
+function renderSettings(){
+  chips('#sDur',Object.fromEntries(C.DURATIONS.map(m=>[m,m+' min'])),cfg.minutes,k=>{ cfg.minutes=+k; saveCfg(); });
+  chips('#sVis',VIS,cfg.visual,k=>{ cfg.visual=k; saveCfg(); });
+  chips('#sSound',SOUNDS,cfg.sound,k=>{ cfg.sound=k; saveCfg(); });
+  chips('#sLang',{pt:'Português',en:'English (parcial)'},cfg.lang,k=>{ cfg.lang=k; saveCfg(); applyLang(); });
+  $('#sInt').value=cfg.intensity; $('#sVol').value=cfg.volume;
+  [['#sBreath','breathSound'],['#sTone','breathTone'],['#sNumbers','numbers'],['#sCue','cue'],['#sVoice','voice'],['#sVibe','vibrate'],['#sSilent','silent'],['#sReduce','reduce'],['#sStaticBg','staticBg'],['#sCheck','checkin']].forEach(([s,k])=>{ const el=$(s); el.checked=!!cfg[k]; el.onchange=()=>{ cfg[k]=el.checked; saveCfg(); }; });
+}
+$('#sInt').oninput=e=>{ cfg.intensity=+e.target.value; saveCfg(); };
+$('#sVol').oninput=e=>{ cfg.volume=+e.target.value; saveCfg(); Snd.applyVolume(); };
+
+/* ================= CONTA ================= */
+let signup=false;
+function setSignup(v){ signup=v; $('#tIn').setAttribute('aria-pressed',!v); $('#tUp').setAttribute('aria-pressed',v); $('#upFields').hidden=!v; $('#aGo').textContent=v?'Criar conta':'Entrar'; $('#aPass').autocomplete=v?'new-password':'current-password'; $('#aErr').textContent=''; $('#aErr').className='err'; }
+function renderAccount(){ if(MODE!=='cloud'){ $('#aErr').textContent='Sem conexão com o servidor do FixBrain agora. Você pode praticar normalmente; o histórico fica neste navegador.'; } setSignup(false); }
+$('#tIn').onclick=()=>setSignup(false); $('#tUp').onclick=()=>setSignup(true);
+$('#aPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#aGo').click(); });
+$('#aGo').onclick=async()=>{
+  const err=$('#aErr'); err.className='err'; err.textContent='';
+  if(MODE!=='cloud'){ err.textContent='Sem conexão com o servidor do FixBrain.'; return; }
+  const email=$('#aEmail').value.trim().toLowerCase(), pass=$('#aPass').value, btn=$('#aGo');
+  if(!email){ $('#aEmail').focus(); return; } if(!pass){ $('#aPass').focus(); return; }
+  btn.disabled=true;
+  try{
+    if(signup){
+      const name=$('#aName').value.trim(), year=parseInt($('#aYear').value,10);
+      if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
+      if(!validYear(year)){ err.textContent='Informe um ano de nascimento válido.'; return; }
+      ls('fixbrain.pendente',JSON.stringify({email,name,year}));
+      const has=await Cloud.signUp(email,pass);
+      if(!has){ err.className='okmsg'; err.textContent='Conta criada! Enviamos um link de confirmação para o seu e-mail. Depois de confirmar, volte e entre.'; setSignup(false); return; }
+    }else await Cloud.signIn(email,pass);
+    await resolveUser(); go(''); onRoute();
+  }catch(e){ err.textContent=ptError(e); }
+  finally{ btn.disabled=false; }
+};
+async function resolveUser(){
+  user=null; if(MODE!=='cloud') return;
+  let u=null; try{ u=await Cloud.current(); }catch(e){}
+  if(u&&u.needsProfile){
+    let pend=null; try{ pend=JSON.parse(ls('fixbrain.pendente')||'null'); }catch(e){}
+    if(pend&&pend.name&&validYear(pend.year)){ try{ await Cloud.saveProfile(u.id,pend.name,pend.year); ls('fixbrain.pendente',null); u=await Cloud.current(); }catch(e){} }
+  }
+  user=u;
+  if(u&&u.needsProfile) show(FLOW.perfil);
+}
+$('#cSave').onclick=async()=>{
+  const err=$('#cErr'); err.textContent='';
+  const name=$('#cName').value.trim(), year=parseInt($('#cYear').value,10);
+  if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
+  if(!validYear(year)){ err.textContent='Informe um ano de nascimento válido.'; return; }
+  try{ await Cloud.saveProfile(user.id,name,year); await resolveUser(); go(''); onRoute(); }catch(e){ err.textContent=ptError(e); }
+};
+
+/* ================= PAINEL PROFISSIONAL ================= */
+let pnData=null;
+async function renderPanel(){
+  $('#pnDetail').innerHTML='';
+  if(!(MODE==='cloud'&&user&&user.admin)){ $('#pnList').innerHTML='<p class="empty">Área restrita à profissional. Entre com a conta autorizada.</p>'; return; }
+  $('#pnList').innerHTML='<p class="empty">Carregando…</p>';
+  try{ pnData=await Cloud.shared(); }catch(e){ $('#pnList').innerHTML='<p class="empty">Não foi possível carregar. Verifique a conexão.</p>'; return; }
+  const ids=Object.keys(pnData.by);
+  if(!ids.length){ $('#pnList').innerHTML='<p class="empty">Nenhum paciente ligou o compartilhamento ainda.</p>'; return; }
+  ids.sort((a,b)=>(pnData.names[a]||'').localeCompare(pnData.names[b]||''));
+  $('#pnList').innerHTML='<table><thead><tr><th>Paciente</th><th class="num">Práticas</th><th class="num">Últimos 7 dias</th><th>Última</th><th class="num">Variação média relatada</th></tr></thead><tbody>'+ids.map(id=>{
+    const ss=pnData.by[id], st=C.stats(ss), l=ss[ss.length-1];
+    return `<tr class="click" data-u="${esc(id)}" tabindex="0" style="cursor:pointer"><td>${esc(pnData.names[id]||'(sem cadastro)')}</td><td class="num">${st.count}</td><td class="num">${st.last7}</td><td>${l?new Date(l.created_at).toLocaleDateString('pt-BR'):'–'}</td><td class="num">${st.avgDiff===null?'–':(st.avgDiff>0?'−':st.avgDiff<0?'+':'')+fmt(Math.abs(st.avgDiff))+' pt'}</td></tr>`;
+  }).join('')+'</tbody></table><p class="hint">Variação média = tensão antes menos tensão depois, nas sessões com os dois registros. Autorrelato, sem valor diagnóstico.</p>';
+  $$('[data-u]').forEach(r=>{ const f=()=>panelDetail(r.dataset.u); r.onclick=f; r.onkeydown=e=>{ if(e.key==='Enter') f(); }; });
+}
+function panelDetail(id){
+  const ss=pnData.by[id], st=C.stats(ss);
+  let h=`<h2>${esc(pnData.names[id]||'(sem cadastro)')}</h2><div class="chartbox">${barChart(st.weeks)}</div>`;
+  if(st.pairs.length) h+=`<div class="chartbox" style="margin-top:12px">${tensionChart(st.pairs)}</div>`;
+  h+='<div class="panel tablewrap" style="margin-top:12px"><table><thead><tr><th>Data</th><th>Prática</th><th class="num">Duração</th><th class="num">Ritmo</th><th class="num">Tensão</th><th></th></tr></thead><tbody>'+
+    ss.slice().reverse().map(s=>`<tr><td>${new Date(s.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</td><td>${esc((PINFO[s.practice]||{}).name||s.practice)}</td><td class="num">${C.fmtClock(s.duration_s)}</td><td class="num">${fmt(s.inhale_s)}/${fmt(s.exhale_s)} s</td><td class="num">${s.tension_before??'–'} → ${s.tension_after??'–'}</td><td>${s.stopped_discomfort?'interrompida por desconforto':''}</td></tr>`).join('')+'</tbody></table></div>';
+  $('#pnDetail').innerHTML=h; $('#pnDetail').scrollIntoView({behavior:cfg.reduce?'auto':'smooth'});
+}
+
+/* ================= INÍCIO ================= */
+if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/i.test(location.hostname)){ navigator.serviceWorker.register('../sw.js').catch(()=>{}); }
+(async function(){
+  applyBodyPrefs(); applyLang();
+  MODE=await detectMode();
+  if(MODE==='local'){
+    const b=$('#banner'); b.textContent='Modo local: o NEBULA funciona por completo, mas o histórico fica salvo só neste navegador. O login e o histórico na conta do FixBrain funcionam quando o FixBrain estiver hospedado no seu domínio.'; b.classList.add('on');
+  }else{
+    try{ await resolveUser(); }catch(e){ user=null; }
+    sb.auth.onAuthStateChange((ev)=>{ if(ev==='SIGNED_OUT'){ user=null; renderWho(); } });
+  }
+  if(!(user&&user.needsProfile)) onRoute();
+})();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Órbita · Treino de rastreamento visual</title>
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#081a2c">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F5; --surface:#FFFFFF; --ink:#15283A; --muted:#566778; --line:#D2DBE4;
+  --accent:#2B5C8A; --accent-ink:#FFFFFF; --soft:#E1EAF3;
+  --target:#36C2B1; --ok:#2E8B57; --err:#C0392B; --warn:#8A6400; --warnbg:#FDF4DC;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1824; --surface:#152434; --ink:#E5ECF3; --muted:#97A8B9; --line:#26394D;
+    --accent:#79AEDF; --accent-ink:#0E1824; --soft:#1B2E42; --warn:#F0D08A; --warnbg:#2A2416;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1824; --surface:#152434; --ink:#E5ECF3; --muted:#97A8B9; --line:#26394D;
+  --accent:#79AEDF; --accent-ink:#0E1824; --soft:#1B2E42; --warn:#F0D08A; --warnbg:#2A2416;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Figtree,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:22px;letter-spacing:-.01em}
+.brand small{font-weight:500;font-size:14px;color:var(--muted)}
+.mark{width:30px;height:30px;border-radius:50%;border:2.5px solid var(--accent);position:relative;flex:none}
+.mark::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--target);top:-4px;left:14px}
+.who{font-size:15px;color:var(--muted);display:flex;gap:12px;align-items:center}
+.linkbtn{background:none;border:0;color:var(--accent);cursor:pointer;padding:4px;font-weight:600}
+.banner{background:var(--warnbg);color:var(--warn);border-radius:10px;padding:11px 15px;font-size:14px;margin:0 0 22px;display:none}
+.banner.on{display:block}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.1;letter-spacing:-.02em;margin:12px 0 14px;max-width:16ch}
+h2{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+h3{font-size:17px;margin:0 0 4px}
+p.lead{font-size:19px;color:var(--muted);max-width:52ch;margin:0 0 28px}
+.view{display:none;padding-bottom:48px}
+.view.on{display:block}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media (max-width:760px){.split{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+label{display:block;font-size:15px;font-weight:600;margin:14px 0 6px}
+input[type=text],input[type=email],input[type=password],select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;padding:13px 22px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+.hint{font-size:14px;color:var(--muted);margin:8px 0 0}
+.err{font-size:14px;color:var(--err);margin:10px 0 0;min-height:1em}
+.okmsg{font-size:14px;color:var(--ok);margin:10px 0 0}
+.tabs{display:flex;gap:8px;margin-bottom:6px}
+.tab{flex:1;border:1.5px solid var(--line);background:transparent;border-radius:10px;padding:10px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tab[aria-selected="true"]{border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
+.choices{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.choice{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer}
+.choice[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.choice b{display:block;font-size:16px}
+.choice span{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.section{margin-top:26px}
+.adv{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+/* arena */
+#arena{position:fixed;inset:0;background:#081a2c;display:none;z-index:20;color:#E8F0F7}
+#arena.on{display:block}
+#canvasHost{position:absolute;inset:0}
+#canvasHost canvas{display:block;width:100%;height:100%;touch-action:none}
+.hud{position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+.hud>*{pointer-events:auto}
+.msg{font-size:clamp(16px,2.4vw,21px);font-weight:600;text-align:center;flex:1;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.pill{background:rgba(255,255,255,.1);border-radius:999px;padding:6px 14px;font-size:14px;white-space:nowrap}
+.hudbtn{background:rgba(255,255,255,.12);color:#E8F0F7;border:0;border-radius:999px;padding:8px 16px;cursor:pointer;font-weight:600}
+#digit{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-size:clamp(44px,8vw,72px);font-weight:700;color:#FFE08A;opacity:0;pointer-events:none;font-variant-numeric:tabular-nums;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+#digit.show{opacity:1}
+#evenBtn{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);display:none;background:#FFE08A;color:#2a2205;border:0;border-radius:999px;padding:14px 30px;font-weight:700;font-size:18px;cursor:pointer}
+#evenBtn.on{display:block}
+#evenBtn.flash{background:#fff}
+/* results */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0 22px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .v{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.stat .k{font-size:14px;color:var(--muted)}
+.big{font-size:clamp(56px,10vw,88px);font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:var(--accent)}
+.chartbox{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;overflow-x:auto}
+.chartbox svg{width:100%;min-width:480px;height:auto;display:block}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--soft)}
+.tablewrap{overflow-x:auto}
+.empty{color:var(--muted);padding:20px 0}
+#loading{padding:60px 0;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="mark" aria-hidden="true"></span>Órbita <small>FixBrain · Neuracademy</small></div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <p class="banner" id="banner"></p>
+  <div id="loading">Carregando…</div>
+
+  <!-- Entrada -->
+  <section class="view" id="v-login">
+    <h1>Treino de rastreamento visual em 3D</h1>
+    <p class="lead">Memorize algumas esferas, acompanhe-as em movimento e encontre-as quando pararem. A velocidade se ajusta ao seu desempenho a cada rodada.</p>
+    <div class="split">
+      <div class="panel">
+        <div class="tabs" role="tablist" id="authTabs">
+          <button class="tab" id="tabLogin" role="tab" aria-selected="true">Entrar</button>
+          <button class="tab" id="tabSignup" role="tab" aria-selected="false">Criar conta</button>
+        </div>
+        <div id="signupFields">
+          <label for="sName">Primeiro nome</label>
+          <input type="text" id="sName" autocomplete="given-name">
+          <label for="sYear">Ano de nascimento</label>
+          <input type="text" id="sYear" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Ex.: 1985">
+        </div>
+        <div id="cloudFields">
+          <label for="lEmail">E-mail</label>
+          <input type="email" id="lEmail" autocomplete="email">
+          <label for="lPass">Senha</label>
+          <input type="password" id="lPass" autocomplete="current-password">
+        </div>
+        <p class="err" id="lErr" role="alert"></p>
+        <div class="row"><button class="btn" id="goAuth">Entrar</button></div>
+        <p class="hint" id="authHint"></p>
+      </div>
+      <div class="panel">
+        <h2>Como funciona</h2>
+        <p class="hint">1. Algumas esferas se acendem: memorize quais são.</p>
+        <p class="hint">2. Todas ficam iguais e se movem. Acompanhe os alvos mantendo o olhar no centro.</p>
+        <p class="hint">3. Quando pararem, toque nas esferas que eram alvo.</p>
+        <div class="row"><button class="btn ghost" id="goPro">Sou a profissional</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Completar cadastro -->
+  <section class="view" id="v-cadastro">
+    <h1>Complete seu cadastro</h1>
+    <div class="panel" style="max-width:460px">
+      <label for="cName">Primeiro nome</label>
+      <input type="text" id="cName" autocomplete="given-name">
+      <label for="cYear">Ano de nascimento</label>
+      <input type="text" id="cYear" inputmode="numeric" maxlength="4" placeholder="Ex.: 1985">
+      <p class="err" id="cErr" role="alert"></p>
+      <div class="row"><button class="btn" id="saveCadastro">Salvar e continuar</button></div>
+    </div>
+  </section>
+
+  <!-- Configuração -->
+  <section class="view" id="v-config">
+    <h1 id="hello">Vamos treinar</h1>
+    <div class="section">
+      <h2>Perfil</h2>
+      <p class="hint">Definido pela idade. Ajusta o número de esferas, a velocidade inicial e a duração. A opção Atleta vale para qualquer faixa.</p>
+      <div class="choices" id="profiles" style="margin-top:12px"></div>
+    </div>
+    <div class="section">
+      <h2>Modo</h2>
+      <div class="choices" id="modes" style="margin-top:12px"></div>
+    </div>
+    <div class="section">
+      <h2>Ajustes</h2>
+      <div class="adv">
+        <div><label for="optTargets">Esferas-alvo</label><select id="optTargets"></select></div>
+        <div><label for="optTotal">Total de esferas</label><select id="optTotal"></select></div>
+        <div><label for="optTrack">Tempo de rastreamento</label><select id="optTrack"></select></div>
+        <div><label for="optRounds">Rodadas</label><select id="optRounds"></select></div>
+      </div>
+    </div>
+    <div class="row"><button class="btn" id="start">Começar treino</button></div>
+    <p class="hint" id="modeHint"></p>
+  </section>
+
+  <!-- Resultado -->
+  <section class="view" id="v-result">
+    <h2>Sessão concluída</h2>
+    <p class="hint">Limiar de velocidade: a velocidade em que você acerta cerca de metade das rodadas. Quanto maior, melhor.</p>
+    <div class="big" id="rThreshold">0</div>
+    <div class="stats" id="rStats"></div>
+    <h3>Velocidade a cada rodada</h3>
+    <p class="hint" style="margin-bottom:10px">Pontos verdes: todos os alvos encontrados. Pontos vermelhos: pelo menos um erro.</p>
+    <div class="chartbox" id="rChart"></div>
+    <div id="rEvoWrap" style="display:none">
+      <h3 style="margin-top:22px">Sua evolução</h3>
+      <p class="hint" style="margin-bottom:10px">Limiar de velocidade a cada sessão de treino.</p>
+      <div class="chartbox" id="rEvo"></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="again">Treinar de novo</button>
+      <button class="btn ghost" id="logout1">Sair</button>
+    </div>
+  </section>
+
+  <!-- Painel profissional -->
+  <section class="view" id="v-panel">
+    <h1>Pacientes</h1>
+    <div class="panel" id="inviteBox" style="display:none;margin-bottom:18px">
+      <h2>Autorizar paciente</h2>
+      <p class="hint">Só os e-mails autorizados aqui conseguem criar conta. O paciente escolhe a própria senha.</p>
+      <div class="adv" style="margin-top:6px">
+        <div><label for="invEmail">E-mail do paciente</label><input type="email" id="invEmail" autocomplete="off"></div>
+        <div><label for="invLabel">Nome, para sua referência</label><input type="text" id="invLabel" autocomplete="off"></div>
+      </div>
+      <p class="err" id="invErr" role="alert"></p>
+      <div class="row" style="margin-top:8px"><button class="btn" id="invAdd">Autorizar</button></div>
+      <div id="invList" class="tablewrap" style="margin-top:14px"></div>
+    </div>
+    <div class="panel tablewrap" id="panelList"></div>
+    <div id="panelDetail" class="section"></div>
+  </section>
+</div>
+
+<!-- Arena -->
+<div id="arena" aria-live="polite">
+  <div id="canvasHost"></div>
+  <div class="hud">
+    <span class="pill" id="hudRound">Rodada 1 de 20</span>
+    <div class="msg" id="hudMsg"></div>
+    <button class="hudbtn" id="quit">Encerrar</button>
+  </div>
+  <div id="digit"></div>
+  <button id="evenBtn">Par</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+const $ = s => document.querySelector(s);
+const fmt = (n,d=2) => Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const SB_URL='https://dswiliptfsvmkmxsmstd.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzd2lsaXB0ZnN2bWtteHNtc3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3ODk3OTMsImV4cCI6MjExMDM2NTc5M30.e2A-1tbklvkUYQUZm7BTdPyPfn9HRiKO1unSR5_5sLk';
+/* Quem é administrador é decidido no servidor, pela função is_admin().
+   Nenhum e-mail fica exposto no código desta página. */
+
+const PROFILES = {
+  infantil1:{label:'Infantil I', range:'4 a 6 anos', desc:'1 alvo entre 4 esferas, ritmo bem calmo', targets:1,total:4,speed:0.7,track:5,rounds:10},
+  infantil:{label:'Infantil II', range:'7 a 14 anos', desc:'2 alvos entre 6 esferas, ritmo calmo', targets:2,total:6,speed:0.9,track:6,rounds:12},
+  adolescente:{label:'Adolescente', range:'15 a 17 anos', desc:'4 alvos entre 8 esferas', targets:4,total:8,speed:1.6,track:8,rounds:20},
+  adulto:{label:'Adulto', range:'18 a 60 anos', desc:'4 alvos entre 8 esferas', targets:4,total:8,speed:1.8,track:8,rounds:20},
+  idoso:{label:'Idoso', range:'acima de 60 anos', desc:'3 alvos, ritmo inicial mais calmo', targets:3,total:6,speed:1.0,track:6,rounds:15}
+};
+const ATHLETE=1.35;
+const MODES = {
+  classico:{label:'Clássico', desc:'Só rastrear os alvos', hint:''},
+  dupla:{label:'Dupla tarefa', desc:'Rastrear e reagir a números pares', hint:'Durante o movimento aparecem números. Quando o número for par, aperte a barra de espaço ou o botão Par.'},
+  inibicao:{label:'Inibição', desc:'Esferas falsas piscam como alvo', hint:'Durante o movimento, algumas esferas que não são alvo vão piscar. Ignore e continue nos alvos originais.'}
+};
+function profileFor(year){
+  if(!year) return 'adulto';
+  const age=new Date().getFullYear()-year;
+  if(age<4) return null;
+  if(age<=6) return 'infantil1';
+  if(age<=14) return 'infantil';
+  if(age<=17) return 'adolescente';
+  if(age<=60) return 'adulto';
+  return 'idoso';
+}
+function profLabel(s){ const p=PROFILES[s.profile]; return (p?p.label:s.profile)+(s.athlete?' (atleta)':''); }
+function validYear(y){ const now=new Date().getFullYear(); return y&&y>=now-110&&y<=now; }
+function ls(k,v){ try{ return v===undefined?localStorage.getItem(k):(v===null?localStorage.removeItem(k):localStorage.setItem(k,v)); }catch(e){ return null; } }
+
+/* ================= BACKEND ================= */
+/* Dois modos: nuvem (Supabase) quando alcançável, local (navegador) quando não. */
+let MODE=null, sb=null;
+
+const Local = {
+  mode:'local',
+  SK:'fixbrain.sessoes.v1', UK:'fixbrain.usuario.v1',
+  _all(){ try{ return JSON.parse(ls(this.SK)||'[]'); }catch(e){ return []; } },
+  async current(){ try{ const u=JSON.parse(ls(this.UK)||'null'); return (u&&u.name)?u:null; }catch(e){ return null; } },
+  async enter({name,year}){ const u={id:'local:'+name.toLowerCase().trim(),name,year}; ls(this.UK,JSON.stringify(u)); return u; },
+  async saveProfile(){ return true; },
+  async signOut(){ ls(this.UK,null); },
+  async saveSession(s,u){
+    try{ const a=this._all(); a.push({...s,user_id:u.id,name:u.name,created_at:new Date().toISOString()}); ls(this.SK,JSON.stringify(a)); return true; }catch(e){ return false; }
+  },
+  async mySessions(u){ return this._all().filter(s=>s.user_id===u.id); },
+  async everything(){
+    const all=this._all(), by={}, names={};
+    all.forEach(s=>{ (by[s.user_id]=by[s.user_id]||[]).push(s); names[s.user_id]={name:s.name}; });
+    return {by,names};
+  }
+};
+
+const Cloud = {
+  mode:'cloud',
+  async current(){
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session) return null;
+    let admin=false;
+    try{ const {data}=await sb.rpc('is_admin'); admin=data===true; }catch(e){}
+    if(admin) return {id:session.user.id,name:'Profissional',admin:true};
+    const {data}=await sb.from('profiles').select('name,birth_year').eq('id',session.user.id).maybeSingle();
+    if(!data) return {id:session.user.id,needsProfile:true};
+    return {id:session.user.id,name:data.name,year:data.birth_year};
+  },
+  async signUp(email,pass){ const {data,error}=await sb.auth.signUp({email,password:pass}); if(error) throw error; return !!data.session; },
+  async signIn(email,pass){ const {error}=await sb.auth.signInWithPassword({email,password:pass}); if(error) throw error; },
+  async saveProfile(id,name,year){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year}); if(error) throw error; },
+  async signOut(){ try{ await sb.auth.signOut(); }catch(e){} },
+  async saveSession(s,u){ try{ const {error}=await sb.from('sessions').insert({...s,user_id:u.id}); return !error; }catch(e){ return false; } },
+  async mySessions(u){ try{ const {data}=await sb.from('sessions').select('*').eq('user_id',u.id).order('created_at'); return data||[]; }catch(e){ return []; } },
+  async everything(){
+    const [a,b]=await Promise.all([ sb.from('profiles').select('id,name,birth_year'), sb.from('sessions').select('*').order('created_at') ]);
+    if(a.error||b.error) throw new Error('fetch');
+    const names={}; (a.data||[]).forEach(p=>names[p.id]=p);
+    const by={}; (b.data||[]).forEach(s=>{ (by[s.user_id]=by[s.user_id]||[]).push(s); });
+    return {by,names};
+  },
+  async invites(){ const {data,error}=await sb.from('invites').select('*').order('created_at',{ascending:false}); if(error) throw error; return data||[]; },
+  async addInvite(email,label){ const {error}=await sb.from('invites').upsert({email,label:label||null}); if(error) throw error; },
+  async removeInvite(email){ const {error}=await sb.from('invites').delete().eq('email',email); if(error) throw error; }
+};
+
+async function detectMode(){
+  if(typeof supabase==='undefined'||!supabase.createClient) return Local;
+  try{
+    sb=supabase.createClient(SB_URL,SB_KEY);
+    const probe=fetch(SB_URL+'/auth/v1/health',{headers:{apikey:SB_KEY}});
+    const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),7000));
+    await Promise.race([probe,timeout]);
+    return Cloud;
+  }catch(e){ sb=null; return Local; }
+}
+function ptError(e){
+  const m=(e&&e.message)||'';
+  if(/database error saving new user|cadastro_nao_autorizado/i.test(m)) return 'Este e-mail ainda não foi autorizado. Peça o acesso à sua neuropsicóloga.';
+  if(/invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
+  if(/already registered/i.test(m)) return 'Já existe uma conta com este e-mail. Use a aba Entrar.';
+  if(/at least 6/i.test(m)) return 'A senha precisa ter pelo menos 6 caracteres.';
+  if(/email not confirmed/i.test(m)) return 'Confirme seu e-mail pelo link que enviamos antes de entrar.';
+  if(/valid email/i.test(m)) return 'Digite um e-mail válido.';
+  if(/rate limit|too many/i.test(m)) return 'Muitas tentativas. Aguarde um minuto e tente de novo.';
+  if(/fetch|network|timeout/i.test(m)) return 'Sem conexão com o servidor. Tente de novo.';
+  return 'Algo deu errado: '+m;
+}
+
+/* ================= NAVEGAÇÃO ================= */
+let user=null, role=null;
+function show(id){
+  $('#loading').style.display='none';
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===id));
+  const w=$('#who');
+  if(role==='patient') w.innerHTML=`<span>${esc(user.name)}</span><button class="linkbtn" data-out>Sair</button>`;
+  else if(role==='pro') w.innerHTML=`<span>Profissional</span><button class="linkbtn" data-out>Sair</button>`;
+  else w.innerHTML='';
+  const o=w.querySelector('[data-out]'); if(o) o.onclick=logout;
+  window.scrollTo(0,0);
+}
+async function logout(){ await MODE.signOut(); user=null; role=null; show('v-login'); }
+function busy(btn,on,txt){ btn.disabled=on; if(on){btn.dataset.t=btn.textContent;btn.textContent=txt;} else if(btn.dataset.t){btn.textContent=btn.dataset.t;} }
+
+/* ================= ENTRADA ================= */
+let signupMode=false;
+function setTab(signup){
+  signupMode=signup;
+  $('#tabLogin').setAttribute('aria-selected',!signup);
+  $('#tabSignup').setAttribute('aria-selected',signup);
+  $('#signupFields').style.display=signup?'block':'none';
+  $('#goAuth').textContent=signup?'Criar conta':'Entrar';
+  $('#lPass').autocomplete=signup?'new-password':'current-password';
+  $('#lErr').textContent=''; $('#lErr').className='err';
+}
+function setupEntry(){
+  if(MODE.mode==='local'){
+    $('#authTabs').style.display='none';
+    $('#cloudFields').style.display='none';
+    $('#signupFields').style.display='block';
+    $('#goAuth').textContent='Começar';
+    $('#authHint').textContent='Modo local: basta o nome e o ano de nascimento.';
+    $('#goPro').style.display='inline-flex';
+  }else{
+    $('#authTabs').style.display='flex';
+    $('#cloudFields').style.display='block';
+    $('#goPro').style.display='none';
+    $('#authHint').textContent='Primeira vez aqui? Toque em "Criar conta" e use o e-mail que sua neuropsicóloga autorizou. A senha precisa ter pelo menos 6 caracteres.';
+    setTab(false);
+  }
+}
+$('#tabLogin').onclick=()=>setTab(false);
+$('#tabSignup').onclick=()=>setTab(true);
+$('#lPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#goAuth').click(); });
+$('#sYear').addEventListener('keydown',e=>{ if(e.key==='Enter'&&MODE&&MODE.mode==='local') $('#goAuth').click(); });
+
+$('#goAuth').onclick=async()=>{
+  const err=$('#lErr'); err.className='err'; err.textContent='';
+  const btn=$('#goAuth');
+
+  if(MODE.mode==='local'){
+    const name=$('#sName').value.trim(), year=parseInt($('#sYear').value,10);
+    if(!name){ err.textContent='Digite seu primeiro nome.'; $('#sName').focus(); return; }
+    if(!validYear(year)){ err.textContent='Informe o ano de nascimento com 4 dígitos.'; $('#sYear').focus(); return; }
+    if(!profileFor(year)){ err.textContent='O treino é indicado a partir dos 4 anos.'; $('#sYear').focus(); return; }
+    user=await Local.enter({name,year}); role='patient'; openConfig(); return;
+  }
+
+  const email=$('#lEmail').value.trim().toLowerCase(), pass=$('#lPass').value;
+  if(!email){ $('#lEmail').focus(); return; }
+  if(!pass){ $('#lPass').focus(); return; }
+  busy(btn,true,'Aguarde…');
+  try{
+    if(signupMode){
+      const name=$('#sName').value.trim(), year=parseInt($('#sYear').value,10);
+      if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
+      if(!validYear(year)||!profileFor(year)){ err.textContent='Informe um ano de nascimento válido (treino a partir dos 4 anos).'; return; }
+      ls('fixbrain.pendente',JSON.stringify({email,name,year}));
+      const hasSession=await Cloud.signUp(email,pass);
+      if(hasSession) await route();
+      else{ err.className='okmsg'; err.textContent='Conta criada! Enviamos um link de confirmação para o seu e-mail. Depois de confirmar, volte aqui e entre.'; setTab(false); }
+    }else{
+      await Cloud.signIn(email,pass);
+      await route();
+    }
+  }catch(e){ err.textContent=ptError(e); }
+  finally{ busy(btn,false); }
+};
+
+$('#goPro').onclick=async()=>{ role='pro'; user={name:'Profissional',admin:true}; await renderPanel(); show('v-panel'); };
+
+$('#saveCadastro').onclick=async()=>{
+  const err=$('#cErr'); err.textContent='';
+  const name=$('#cName').value.trim(), year=parseInt($('#cYear').value,10);
+  if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
+  if(!validYear(year)||!profileFor(year)){ err.textContent='Informe um ano de nascimento válido (treino a partir dos 4 anos).'; return; }
+  const btn=$('#saveCadastro'); busy(btn,true,'Salvando…');
+  try{ await Cloud.saveProfile(user.id,name,year); await route(); }
+  catch(e){ err.textContent=ptError(e); }
+  finally{ busy(btn,false); }
+};
+
+async function route(){
+  let u=null;
+  try{ u=await MODE.current(); }catch(e){ u=null; }
+  if(!u){ setupEntry(); show('v-login'); return; }
+  if(u.needsProfile){
+    user=u;
+    let pend=null; try{ pend=JSON.parse(ls('fixbrain.pendente')||'null'); }catch(e){}
+    if(pend&&pend.name&&validYear(pend.year)){
+      try{ await Cloud.saveProfile(u.id,pend.name,pend.year); ls('fixbrain.pendente',null); return route(); }catch(e){}
+    }
+    show('v-cadastro'); return;
+  }
+  ls('fixbrain.pendente',null);
+  user=u;
+  if(u.admin){ role='pro'; await renderPanel(); show('v-panel'); return; }
+  role='patient'; openConfig();
+}
+
+$('#logout1').onclick=logout;
+$('#again').onclick=()=>openConfig();
+
+/* ================= CONFIGURAÇÃO ================= */
+const cfg={profile:'adulto',athlete:false,mode:'classico'};
+function fillSelect(sel,vals,cur,suffix=''){ sel.innerHTML=vals.map(v=>`<option value="${v}"${v==cur?' selected':''}>${v}${suffix}</option>`).join(''); }
+function applyProfile(){
+  const p=PROFILES[cfg.profile];
+  fillSelect($('#optTargets'),[1,2,3,4,5],p.targets);
+  fillSelect($('#optTotal'),[4,5,6,7,8,9,10,12],p.total);
+  fillSelect($('#optTrack'),[4,5,6,8,10,12],p.track,' s');
+  fillSelect($('#optRounds'),[10,15,20,25],p.rounds);
+}
+function renderChoices(){
+  const p=PROFILES[cfg.profile];
+  $('#profiles').innerHTML=`<div class="choice" aria-pressed="true"><b>${p.label}</b><span>${p.range}, ${p.desc}</span></div><button class="choice" id="athlete" aria-pressed="${cfg.athlete}"><b>Atleta</b><span>Velocidade inicial mais alta, para quem pratica esporte</span></button>`;
+  $('#modes').innerHTML=Object.entries(MODES).map(([k,m])=>`<button class="choice" data-m="${k}" aria-pressed="${k===cfg.mode}"><b>${m.label}</b><span>${m.desc}</span></button>`).join('');
+  $('#modeHint').textContent=MODES[cfg.mode].hint;
+  $('#athlete').onclick=()=>{cfg.athlete=!cfg.athlete;renderChoices();};
+  document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{cfg.mode=b.dataset.m;renderChoices();});
+}
+function openConfig(){ cfg.profile=profileFor(user.year)||'adulto'; $('#hello').textContent=`Olá, ${user.name}`; applyProfile(); renderChoices(); show('v-config'); }
+
+/* ================= MOTOR 3D ================= */
+const BOX={x:5,y:3,z:3}, R=0.42;
+const COL={sphere:0xE7A93C, target:0x36C2B1, pick:0xF4F7FA, ok:0x3FBF7F, err:0xE5534B};
+let renderer,scene,camera,raycaster,ready=false,balls=[],last=0,S=null;
+
+function initThree(){
+  if(ready) return; ready=true;
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  $('#canvasHost').appendChild(renderer.domElement);
+  scene=new THREE.Scene(); scene.background=new THREE.Color(0x081a2c);
+  camera=new THREE.PerspectiveCamera(50,1,0.1,100);
+  scene.add(new THREE.AmbientLight(0xffffff,0.5));
+  const d=new THREE.DirectionalLight(0xffffff,0.85); d.position.set(4,7,9); scene.add(d);
+  const g=new THREE.BoxGeometry(BOX.x*2,BOX.y*2,BOX.z*2);
+  scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0x3E6C96})));
+  const back=new THREE.Mesh(new THREE.PlaneGeometry(BOX.x*2,BOX.y*2),new THREE.MeshBasicMaterial({color:0x0C2640}));
+  back.position.z=-BOX.z; scene.add(back);
+  raycaster=new THREE.Raycaster();
+  window.addEventListener('resize',resize);
+  renderer.domElement.addEventListener('pointerdown',onPick);
+  requestAnimationFrame(loop);
+}
+function resize(){
+  if(!renderer) return;
+  const w=window.innerWidth,h=window.innerHeight,a=w/h,t=Math.tan(THREE.MathUtils.degToRad(25));
+  renderer.setSize(w,h,false); camera.aspect=a;
+  camera.position.set(0,0,Math.max((BOX.y+0.9)/t,(BOX.x+0.6)/(t*a))+BOX.z);
+  camera.updateProjectionMatrix();
+}
+function rnd(a,b){ return a+Math.random()*(b-a); }
+function randDir(){ const v=new THREE.Vector3(rnd(-1,1),rnd(-1,1),rnd(-1,1)); return v.lengthSq()<1e-4?new THREE.Vector3(1,0,0):v.normalize(); }
+function color(b,c,emis=0){ b.mesh.material.color.setHex(c); b.mesh.material.emissive.setHex(emis?c:0); b.mesh.material.emissiveIntensity=emis; }
+function makeBalls(n){
+  balls.forEach(b=>scene.remove(b.mesh)); balls=[];
+  const geo=new THREE.SphereGeometry(R,32,24);
+  for(let i=0;i<n;i++){
+    let p,tries=0;
+    do{ p=new THREE.Vector3(rnd(-BOX.x+R,BOX.x-R),rnd(-BOX.y+R,BOX.y-R),rnd(-BOX.z+R,BOX.z-R)); tries++; }
+    while(tries<200 && balls.some(b=>b.pos.distanceTo(p)<R*3));
+    const mat=new THREE.MeshStandardMaterial({color:COL.sphere,roughness:.35,metalness:.1});
+    const mesh=new THREE.Mesh(geo,mat); mesh.position.copy(p); mesh.userData.i=i; scene.add(mesh);
+    balls.push({pos:p,vel:randDir(),mesh,target:false,picked:false});
+  }
+}
+function physics(dt,speed){
+  const lim={x:BOX.x-R,y:BOX.y-R,z:BOX.z-R};
+  for(const b of balls){
+    b.pos.addScaledVector(b.vel,speed*dt);
+    for(const ax of ['x','y','z']){
+      if(b.pos[ax]>lim[ax]){b.pos[ax]=lim[ax];b.vel[ax]=-Math.abs(b.vel[ax]);}
+      if(b.pos[ax]<-lim[ax]){b.pos[ax]=-lim[ax];b.vel[ax]=Math.abs(b.vel[ax]);}
+    }
+  }
+  const n=new THREE.Vector3();
+  for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++){
+    const a=balls[i],c=balls[j]; n.subVectors(c.pos,a.pos); const d=n.length();
+    if(d>0&&d<2*R){
+      n.divideScalar(d);
+      const rel=a.vel.dot(n)-c.vel.dot(n);
+      if(rel>0){ a.vel.addScaledVector(n,-rel); c.vel.addScaledVector(n,rel); }
+      const o=(2*R-d)/2; a.pos.addScaledVector(n,-o); c.pos.addScaledVector(n,o);
+      if(a.vel.lengthSq()<1e-4)a.vel.copy(randDir()); else a.vel.normalize();
+      if(c.vel.lengthSq()<1e-4)c.vel.copy(randDir()); else c.vel.normalize();
+    }
+  }
+  balls.forEach(b=>b.mesh.position.copy(b.pos));
+}
+
+/* ================= SESSÃO ================= */
+function startSession(){
+  const o={targets:+$('#optTargets').value,total:+$('#optTotal').value,track:+$('#optTrack').value,rounds:+$('#optRounds').value};
+  if(o.targets>=o.total) o.total=Math.min(12,o.targets+3);
+  S={...o,profile:cfg.profile,mode:cfg.mode,speed:PROFILES[cfg.profile].speed*(cfg.athlete?ATHLETE:1),athlete:cfg.athlete,
+     round:0,trials:[],reversals:[],lastDir:0,dual:{hits:0,misses:0,fa:0},phase:null};
+  $('#arena').classList.add('on'); initThree(); resize();
+  $('#evenBtn').classList.toggle('on',S.mode==='dupla');
+  nextTrial();
+}
+function setMsg(t){ $('#hudMsg').textContent=t; }
+function hideDigit(){ $('#digit').classList.remove('show'); }
+function nextTrial(){
+  S.round++; $('#hudRound').textContent=`Rodada ${S.round} de ${S.rounds}`;
+  makeBalls(S.total);
+  [...balls.keys()].sort(()=>Math.random()-.5).slice(0,S.targets).forEach(i=>balls[i].target=true);
+  S.picks=0; S.lures=[]; S.digits=[];
+  if(S.mode==='inibicao'){
+    const nd=balls.filter(b=>!b.target); const k=Math.max(1,Math.round(S.track/4));
+    for(let i=0;i<k;i++) S.lures.push({at:rnd(1.2,S.track-1.2),ball:nd[Math.floor(Math.random()*nd.length)],done:false});
+  }
+  if(S.mode==='dupla'){
+    let t=rnd(0.8,1.4);
+    while(t<S.track-0.8){ S.digits.push({at:t,v:Math.floor(Math.random()*9)+1,resp:false}); t+=rnd(1.3,1.9); }
+  }
+  phase('present');
+}
+function phase(p){
+  S.phase=p; S.t0=performance.now();
+  if(p==='present'){ balls.forEach(b=>color(b,COL.sphere)); setMsg('Prepare-se'); }
+  if(p==='cue'){ balls.forEach(b=>color(b,b.target?COL.target:COL.sphere,b.target?.25:0)); setMsg(S.targets===1?'Memorize a esfera destacada':`Memorize as ${S.targets} esferas destacadas`); }
+  if(p==='track'){ balls.forEach(b=>color(b,COL.sphere)); setMsg('Acompanhe os alvos'); }
+  if(p==='respond'){ hideDigit(); setMsg(S.targets===1?'Toque na esfera que era alvo':`Toque nas ${S.targets} esferas que eram alvo`); }
+}
+function update(now,dt){
+  const el=(now-S.t0)/1000;
+  if(S.phase==='present'&&el>1) phase('cue');
+  else if(S.phase==='cue'){
+    const s=1+0.12*Math.sin(el*10); balls.forEach(b=>b.mesh.scale.setScalar(b.target?s:1));
+    if(el>2.2){ balls.forEach(b=>b.mesh.scale.setScalar(1)); phase('track'); }
+  }
+  else if(S.phase==='track'){
+    physics(dt,S.speed);
+    for(const l of S.lures){
+      if(!l.done&&el>=l.at){ color(l.ball,COL.target,.25); if(el>l.at+0.35){ color(l.ball,COL.sphere); l.done=true; } }
+    }
+    let shown=null;
+    for(const d of S.digits){ if(el>=d.at&&el<d.at+0.7) shown=d; }
+    if(shown){ $('#digit').textContent=shown.v; $('#digit').classList.add('show'); } else hideDigit();
+    if(el>=S.track) phase('respond');
+  }
+  else if(S.phase==='feedback'&&el>1.6) endTrial();
+}
+function evenPress(){
+  if(!S||S.phase!=='track') return;
+  const el=(performance.now()-S.t0)/1000;
+  const d=S.digits.find(d=>!d.resp&&el>=d.at&&el<d.at+1.1);
+  if(d){ d.resp=true; if(d.v%2===0) S.dual.hits++; else S.dual.fa++; } else S.dual.fa++;
+  const b=$('#evenBtn'); b.classList.add('flash'); setTimeout(()=>b.classList.remove('flash'),120);
+}
+$('#evenBtn').onclick=evenPress;
+window.addEventListener('keydown',e=>{ if(e.code==='Space'&&S&&$('#arena').classList.contains('on')){ e.preventDefault(); evenPress(); } });
+
+function onPick(e){
+  if(!S||S.phase!=='respond') return;
+  const r=renderer.domElement.getBoundingClientRect();
+  const p=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  raycaster.setFromCamera(p,camera);
+  const hit=raycaster.intersectObjects(balls.map(b=>b.mesh))[0];
+  if(!hit) return;
+  const b=balls[hit.object.userData.i];
+  if(b.picked){ b.picked=false; S.picks--; color(b,COL.sphere); }
+  else if(S.picks<S.targets){ b.picked=true; S.picks++; color(b,COL.pick,.15); }
+  if(S.picks===S.targets) setTimeout(evaluate,250);
+}
+function evaluate(){
+  if(S.phase!=='respond') return;
+  const correct=balls.filter(b=>b.picked&&b.target).length;
+  balls.forEach(b=>{
+    if(b.target&&b.picked) color(b,COL.ok,.3);
+    else if(b.target) color(b,COL.target,.2);
+    else if(b.picked) color(b,COL.err,.3);
+  });
+  const all=correct===S.targets;
+  S.trials.push({speed:S.speed,correct,all});
+  if(S.mode==='dupla') S.digits.forEach(d=>{ if(d.v%2===0&&!d.resp) S.dual.misses++; });
+  const dir=all?1:-1;
+  if(S.lastDir&&dir!==S.lastDir) S.reversals.push(S.speed);
+  S.lastDir=dir;
+  S.speed=all?S.speed*1.1:S.speed/1.1;
+  setMsg(all?`Muito bem: ${correct} de ${S.targets}`:`${correct} de ${S.targets} corretas`);
+  phase('feedback'); S.phase='feedback';
+}
+function endTrial(){ if(S.round>=S.rounds) finish(true); else nextTrial(); }
+$('#quit').onclick=()=>finish(false);
+function avg(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
+
+async function finish(save){
+  $('#arena').classList.remove('on'); hideDigit();
+  if(!save||!S.trials.length){ S=null; openConfig(); return; }
+  const tr=S.trials, rv=S.reversals.slice(-4);
+  const threshold=rv.length>=2?avg(rv):avg(tr.slice(-5).map(t=>t.speed));
+  const acc=tr.reduce((a,t)=>a+t.correct,0)/(tr.length*S.targets);
+  const sess={profile:S.profile,athlete:!!S.athlete,mode:S.mode,targets:S.targets,total:S.total,track:S.track,rounds:tr.length,
+    threshold:+threshold.toFixed(3),accuracy:+acc.toFixed(4),max_speed:+Math.max(...tr.map(t=>t.speed)).toFixed(3),
+    dual:S.mode==='dupla'?S.dual:null,speeds:tr.map(t=>+t.speed.toFixed(3)),ok:tr.map(t=>t.all)};
+  S=null;
+  const saved=await MODE.saveSession(sess,user);
+  renderResult(sess,saved); show('v-result');
+  try{
+    const hist=await MODE.mySessions(user);
+    if(hist&&hist.length>1){ $('#rEvo').innerHTML=chart(hist.map(s=>+s.threshold),null,'Sessão'); $('#rEvoWrap').style.display='block'; }
+  }catch(e){}
+}
+
+/* ================= RESULTADOS ================= */
+function renderResult(s,saved){
+  $('#rThreshold').textContent=fmt(s.threshold);
+  const items=[
+    [fmt(s.accuracy*100,0)+'%','Alvos encontrados'],
+    [fmt(s.max_speed),'Velocidade máxima'],
+    [s.rounds,'Rodadas'],
+    [profLabel(s)+', '+MODES[s.mode].label,'Perfil e modo']
+  ];
+  if(s.dual){ const tot=s.dual.hits+s.dual.misses; items.push([`${s.dual.hits}/${tot}`,'Números pares detectados'],[s.dual.fa,'Toques indevidos']); }
+  $('#rStats').innerHTML=items.map(([v,k])=>`<div class="stat"><div class="v">${esc(v)}</div><div class="k">${k}</div></div>`).join('')+
+    (saved?'':'<div class="stat"><div class="k">Não foi possível salvar esta sessão. O resultado desta tela não ficará no histórico.</div></div>');
+  $('#rChart').innerHTML=chart(s.speeds,s.ok,'Rodada');
+  $('#rEvoWrap').style.display='none';
+}
+function chart(vals,ok,xl){
+  const W=640,H=220,L=44,Rr=14,T=14,B=34;
+  if(!vals||!vals.length) return '<p class="empty">Sem dados.</p>';
+  const mx=Math.max(...vals)*1.1, mn=Math.min(...vals)*0.9;
+  const x=i=>L+(vals.length===1?0:(i*(W-L-Rr)/(vals.length-1)));
+  const y=v=>T+(H-T-B)*(1-(v-mn)/((mx-mn)||1));
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de velocidade">`;
+  [mn,(mn+mx)/2,mx].forEach(t=>{ s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)"/><text x="${L-6}" y="${y(t)+4}" font-size="12" text-anchor="end" fill="var(--muted)">${fmt(t,1)}</text>`; });
+  s+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${vals.map((v,i)=>x(i)+','+y(v)).join(' ')}"/>`;
+  vals.forEach((v,i)=>{ const c=ok?(ok[i]?'var(--ok)':'var(--err)'):'var(--accent)'; s+=`<circle cx="${x(i)}" cy="${y(v)}" r="4.5" fill="${c}"/>`; });
+  const step=Math.ceil(vals.length/10);
+  vals.forEach((v,i)=>{ if(i%step===0||i===vals.length-1) s+=`<text x="${x(i)}" y="${H-12}" font-size="12" text-anchor="middle" fill="var(--muted)">${i+1}</text>`; });
+  return s+`<text x="${W-Rr}" y="${H-1}" font-size="12" text-anchor="end" fill="var(--muted)">${xl}</text></svg>`;
+}
+
+/* ================= PAINEL ================= */
+let panelData=null;
+async function renderPanel(){
+  renderInvites();
+  $('#panelList').innerHTML='<p class="empty">Carregando pacientes…</p>';
+  $('#panelDetail').innerHTML='';
+  try{ panelData=await MODE.everything(); }
+  catch(e){ $('#panelList').innerHTML='<p class="empty">Não foi possível carregar os dados. Verifique a conexão e recarregue a página.</p>'; return; }
+  const {by,names}=panelData;
+  const ids=Object.keys(by);
+  if(!ids.length){ $('#panelList').innerHTML='<p class="empty">Nenhuma sessão registrada ainda. Quando um paciente treinar, ele aparece aqui.</p>'; return; }
+  ids.sort((p,q)=>((names[p]||{}).name||'').localeCompare((names[q]||{}).name||''));
+  let h='<table><thead><tr><th>Paciente</th><th class="num">Sessões</th><th>Última</th><th class="num">Último limiar</th><th class="num">Variação</th></tr></thead><tbody>';
+  ids.forEach(id=>{
+    const ss=by[id], l=ss[ss.length-1], f=ss[0];
+    const dv=ss.length>1?((l.threshold-f.threshold)/f.threshold*100):null;
+    h+=`<tr class="click" data-c="${esc(id)}" tabindex="0"><td>${esc((names[id]||{}).name||'(sem cadastro)')}</td><td class="num">${ss.length}</td><td>${new Date(l.created_at).toLocaleDateString('pt-BR')}</td><td class="num">${fmt(l.threshold)}</td><td class="num">${dv===null?'–':(dv>=0?'+':'')+fmt(dv,0)+'%'}</td></tr>`;
+  });
+  $('#panelList').innerHTML=h+'</tbody></table>';
+  document.querySelectorAll('tr[data-c]').forEach(r=>{ const go=()=>renderDetail(r.dataset.c); r.onclick=go; r.onkeydown=e=>{ if(e.key==='Enter') go(); }; });
+}
+function renderDetail(id){
+  const ss=panelData.by[id], nm=(panelData.names[id]||{}).name||'(sem cadastro)';
+  let h=`<h2>${esc(nm)}</h2><p class="hint" style="margin-bottom:10px">Evolução do limiar de velocidade por sessão.</p><div class="chartbox">${chart(ss.map(s=>+s.threshold),null,'Sessão')}</div>`;
+  h+='<div class="panel tablewrap" style="margin-top:16px"><table><thead><tr><th>Data</th><th>Perfil</th><th>Modo</th><th class="num">Alvos</th><th class="num">Limiar</th><th class="num">Acertos</th><th class="num">Pares</th></tr></thead><tbody>';
+  ss.slice().reverse().forEach(s=>{
+    const d=s.dual?`${s.dual.hits}/${s.dual.hits+s.dual.misses} (${s.dual.fa} indev.)`:'–';
+    h+=`<tr><td>${new Date(s.created_at).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</td><td>${profLabel(s)}</td><td>${(MODES[s.mode]||{}).label||s.mode}</td><td class="num">${s.targets}/${s.total}</td><td class="num">${fmt(s.threshold)}</td><td class="num">${fmt(s.accuracy*100,0)}%</td><td class="num">${d}</td></tr>`;
+  });
+  $('#panelDetail').innerHTML=h+'</tbody></table></div>';
+  $('#panelDetail').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function renderInvites(){
+  const box=$('#inviteBox');
+  if(!MODE||MODE.mode!=='cloud'){ box.style.display='none'; return; }
+  box.style.display='block';
+  let rows=[];
+  try{ rows=await Cloud.invites(); }
+  catch(e){ $('#invList').innerHTML='<p class="empty">Não foi possível carregar as autorizações.</p>'; return; }
+  if(!rows.length){ $('#invList').innerHTML='<p class="empty">Nenhum e-mail autorizado ainda.</p>'; return; }
+  $('#invList').innerHTML='<table><thead><tr><th>E-mail</th><th>Nome</th><th>Autorizado em</th><th></th></tr></thead><tbody>'+
+    rows.map(r=>`<tr><td>${esc(r.email)}</td><td>${esc(r.label||'')}</td><td>${new Date(r.created_at).toLocaleDateString('pt-BR')}</td><td><button class="linkbtn" data-rm="${esc(r.email)}">Remover</button></td></tr>`).join('')+'</tbody></table>';
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{ b.disabled=true; try{ await Cloud.removeInvite(b.dataset.rm); }catch(e){} renderInvites(); });
+}
+$('#invAdd').onclick=async()=>{
+  const err=$('#invErr'); err.textContent='';
+  const email=$('#invEmail').value.trim().toLowerCase(), label=$('#invLabel').value.trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Digite um e-mail válido.'; $('#invEmail').focus(); return; }
+  const btn=$('#invAdd'); busy(btn,true,'Autorizando…');
+  try{ await Cloud.addInvite(email,label); $('#invEmail').value=''; $('#invLabel').value=''; await renderInvites(); }
+  catch(e){ err.textContent=ptError(e); }
+  finally{ busy(btn,false); }
+};
+
+function loop(now){
+  requestAnimationFrame(loop);
+  const dt=Math.min((now-(last||now))/1000,0.05); last=now;
+  if(S&&$('#arena').classList.contains('on')){ update(now,dt); renderer.render(scene,camera); }
+}
+$('#start').onclick=startSession;
+
+if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/i.test(location.hostname)){
+  navigator.serviceWorker.register('../sw.js').catch(()=>{});
+}
+
+/* ================= INÍCIO ================= */
+(async function(){
+  MODE=await detectMode();
+  if(MODE.mode==='local'){
+    const b=$('#banner');
+    b.textContent='Modo local: o treino funciona por completo, mas as sessões ficam salvas só neste navegador. O login com senha e o histórico na nuvem entram em funcionamento quando o Órbita estiver hospedado dentro do FixBrain.';
+    b.classList.add('on');
+  }
+  setupEntry();
+  try{ await route(); }catch(e){ setupEntry(); show('v-login'); }
+})();
+})();
+</script>
+</body>
+</html>
