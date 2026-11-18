@@ -64,6 +64,12 @@ input[type=text],input[type=email],input[type=password],select{width:100%;paddin
 .hint{font-size:14px;color:var(--muted);margin:8px 0 0}
 .err{font-size:14px;color:var(--err);margin:10px 0 0;min-height:1em}
 .okmsg{font-size:14px;color:var(--ok);margin:10px 0 0}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:400;color:var(--muted);margin:14px 0 0;line-height:1.45}
+.check input{flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+.check a{color:var(--accent);font-weight:600}
+.forgot{margin:6px 0 0 -4px;font-size:14px}
+.legal{font-size:13px;color:var(--muted);margin:14px 0 0}
+.legal a{color:var(--accent)}
 .tabs{display:flex;gap:8px;margin-bottom:6px}
 .tab{flex:1;border:1.5px solid var(--line);background:transparent;border-radius:10px;padding:10px;font-weight:600;cursor:pointer;color:var(--muted)}
 .tab[aria-selected="true"]{border-color:var(--accent);color:var(--ink);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -139,10 +145,16 @@ tr.click:hover td{background:var(--soft)}
           <input type="email" id="lEmail" autocomplete="email">
           <label for="lPass">Senha</label>
           <input type="password" id="lPass" autocomplete="current-password">
+          <button class="linkbtn forgot" id="forgot" type="button">Esqueci minha senha</button>
+        </div>
+        <div id="consentFields">
+          <label class="check"><input type="checkbox" id="sTerms"><span>Li e aceito os <a href='/termos' rel='noopener' target='_blank'>Termos de Uso</a> e a <a href='/privacidade' rel='noopener' target='_blank'>Política de Privacidade</a>, e autorizo o tratamento dos dados do treino para acompanhamento pela profissional.</span></label>
+          <label class="check" id="sGuardWrap"><input type="checkbox" id="sGuard"><span>Sou mãe, pai ou responsável legal e autorizo o uso do Órbita por esta criança ou adolescente.</span></label>
         </div>
         <p class="err" id="lErr" role="alert"></p>
         <div class="row"><button class="btn" id="goAuth">Entrar</button></div>
         <p class="hint" id="authHint"></p>
+        <p class="legal"><a href='/termos' rel='noopener' target='_blank'>Termos de Uso</a> · <a href='/privacidade' rel='noopener' target='_blank'>Política de Privacidade</a></p>
       </div>
       <div class="panel">
         <h2>Como funciona</h2>
@@ -162,8 +174,24 @@ tr.click:hover td{background:var(--soft)}
       <input type="text" id="cName" autocomplete="given-name">
       <label for="cYear">Ano de nascimento</label>
       <input type="text" id="cYear" inputmode="numeric" maxlength="4" placeholder="Ex.: 1985">
+      <label class="check"><input type="checkbox" id="cTerms"><span>Li e aceito os <a href='/termos' rel='noopener' target='_blank'>Termos de Uso</a> e a <a href='/privacidade' rel='noopener' target='_blank'>Política de Privacidade</a>, e autorizo o tratamento dos dados do treino para acompanhamento pela profissional.</span></label>
+      <label class="check" id="cGuardWrap"><input type="checkbox" id="cGuard"><span>Sou mãe, pai ou responsável legal e autorizo o uso do Órbita por esta criança ou adolescente.</span></label>
       <p class="err" id="cErr" role="alert"></p>
       <div class="row"><button class="btn" id="saveCadastro">Salvar e continuar</button></div>
+    </div>
+  </section>
+
+  <!-- Nova senha -->
+  <section class="view" id="v-novasenha">
+    <h1>Crie uma nova senha</h1>
+    <div class="panel" style="max-width:460px">
+      <label for="nPass">Nova senha</label>
+      <input type="password" id="nPass" autocomplete="new-password">
+      <label for="nPass2">Repita a nova senha</label>
+      <input type="password" id="nPass2" autocomplete="new-password">
+      <p class="err" id="nErr" role="alert"></p>
+      <div class="row"><button class="btn" id="saveSenha">Salvar nova senha</button></div>
+      <p class="hint">A senha precisa ter pelo menos 6 caracteres.</p>
     </div>
   </section>
 
@@ -314,13 +342,16 @@ const Cloud = {
     let admin=false;
     try{ const {data}=await sb.rpc('is_admin'); admin=data===true; }catch(e){}
     if(admin) return {id:session.user.id,name:'Profissional',admin:true};
-    const {data}=await sb.from('profiles').select('name,birth_year').eq('id',session.user.id).maybeSingle();
+    const {data}=await sb.from('profiles').select('name,birth_year,consent_at').eq('id',session.user.id).maybeSingle();
     if(!data) return {id:session.user.id,needsProfile:true};
+    if(!data.consent_at) return {id:session.user.id,needsProfile:true,name:data.name,year:data.birth_year};
     return {id:session.user.id,name:data.name,year:data.birth_year};
   },
   async signUp(email,pass){ const {data,error}=await sb.auth.signUp({email,password:pass}); if(error) throw error; return !!data.session; },
   async signIn(email,pass){ const {error}=await sb.auth.signInWithPassword({email,password:pass}); if(error) throw error; },
-  async saveProfile(id,name,year){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year}); if(error) throw error; },
+  async saveProfile(id,name,year,guardian){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year,consent_at:new Date().toISOString(),consent_version:TERMS_VERSION,guardian_consent:!!guardian}); if(error) throw error; },
+  async forgot(email){ const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname}); if(error) throw error; },
+  async newPassword(pass){ const {error}=await sb.auth.updateUser({password:pass}); if(error) throw error; },
   async signOut(){ try{ await sb.auth.signOut(); }catch(e){} },
   async saveSession(s,u){ try{ const {error}=await sb.from('sessions').insert({...s,user_id:u.id}); return !error; }catch(e){ return false; } },
   async mySessions(u){ try{ const {data}=await sb.from('sessions').select('*').eq('user_id',u.id).order('created_at'); return data||[]; }catch(e){ return []; } },
@@ -336,6 +367,9 @@ const Cloud = {
   async removeInvite(email){ const {error}=await sb.from('invites').delete().eq('email',email); if(error) throw error; }
 };
 
+const HASH=location.hash||'';
+const RECOVERY=/type=recovery/.test(HASH);
+const LINK_ERROR=/error_code=|error=access_denied/.test(HASH);
 async function detectMode(){
   if(typeof supabase==='undefined'||!supabase.createClient) return Local;
   try{
@@ -348,6 +382,9 @@ async function detectMode(){
 }
 function ptError(e){
   const m=(e&&e.message)||'';
+  if(/email rate limit/i.test(m)) return 'O limite de e-mails desta hora foi atingido. Tente de novo em cerca de uma hora ou fale com sua neuropsicóloga.';
+  if(/different from the old/i.test(m)) return 'A nova senha precisa ser diferente da anterior.';
+  if(/session missing|not authenticated/i.test(m)) return 'O link expirou. Peça um novo em "Esqueci minha senha".';
   if(/database error saving new user|cadastro_nao_autorizado/i.test(m)) return 'Este e-mail ainda não foi autorizado. Peça o acesso à sua neuropsicóloga.';
   if(/invalid login credentials/i.test(m)) return 'E-mail ou senha incorretos.';
   if(/already registered/i.test(m)) return 'Já existe uma conta com este e-mail. Use a aba Entrar.';
@@ -376,11 +413,20 @@ function busy(btn,on,txt){ btn.disabled=on; if(on){btn.dataset.t=btn.textContent
 
 /* ================= ENTRADA ================= */
 let signupMode=false;
+const TERMS_VERSION='2026-11-18';
+function isMinor(y){ return validYear(y) && (new Date().getFullYear()-y)<18; }
+function syncGuard(){
+  $('#sGuardWrap').style.display=isMinor(parseInt($('#sYear').value,10))?'flex':'none';
+  $('#cGuardWrap').style.display=isMinor(parseInt($('#cYear').value,10))?'flex':'none';
+}
 function setTab(signup){
   signupMode=signup;
   $('#tabLogin').setAttribute('aria-selected',!signup);
   $('#tabSignup').setAttribute('aria-selected',signup);
   $('#signupFields').style.display=signup?'block':'none';
+  $('#consentFields').style.display=signup?'block':'none';
+  $('#forgot').style.display=signup?'none':'inline-block';
+  syncGuard();
   $('#goAuth').textContent=signup?'Criar conta':'Entrar';
   $('#lPass').autocomplete=signup?'new-password':'current-password';
   $('#lErr').textContent=''; $('#lErr').className='err';
@@ -390,6 +436,7 @@ function setupEntry(){
     $('#authTabs').style.display='none';
     $('#cloudFields').style.display='none';
     $('#signupFields').style.display='block';
+    $('#consentFields').style.display='none';
     $('#goAuth').textContent='Começar';
     $('#authHint').textContent='Modo local: basta o nome e o ano de nascimento.';
     $('#goPro').style.display='inline-flex';
@@ -403,6 +450,27 @@ function setupEntry(){
 }
 $('#tabLogin').onclick=()=>setTab(false);
 $('#tabSignup').onclick=()=>setTab(true);
+$('#sYear').addEventListener('input',syncGuard);
+$('#cYear').addEventListener('input',syncGuard);
+$('#forgot').onclick=async()=>{
+  const err=$('#lErr'); err.className='err'; err.textContent='';
+  const email=$('#lEmail').value.trim().toLowerCase();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ err.textContent='Digite seu e-mail no campo acima e toque de novo em "Esqueci minha senha".'; $('#lEmail').focus(); return; }
+  const btn=$('#forgot'); busy(btn,true,'Enviando…');
+  try{ await Cloud.forgot(email); err.className='okmsg'; err.textContent='Se houver uma conta com este e-mail, enviamos um link para criar uma nova senha. Confira também a caixa de spam.'; }
+  catch(e){ err.textContent=ptError(e); }
+  finally{ busy(btn,false); }
+};
+$('#saveSenha').onclick=async()=>{
+  const err=$('#nErr'); err.className='err'; err.textContent='';
+  const a=$('#nPass').value, b=$('#nPass2').value;
+  if(a.length<6){ err.textContent='A senha precisa ter pelo menos 6 caracteres.'; $('#nPass').focus(); return; }
+  if(a!==b){ err.textContent='As duas senhas não são iguais.'; $('#nPass2').focus(); return; }
+  const btn=$('#saveSenha'); busy(btn,true,'Salvando…');
+  try{ await Cloud.newPassword(a); $('#nPass').value=''; $('#nPass2').value=''; await route(); }
+  catch(e){ err.textContent=ptError(e); }
+  finally{ busy(btn,false); }
+};
 $('#lPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#goAuth').click(); });
 $('#sYear').addEventListener('keydown',e=>{ if(e.key==='Enter'&&MODE&&MODE.mode==='local') $('#goAuth').click(); });
 
@@ -427,7 +495,9 @@ $('#goAuth').onclick=async()=>{
       const name=$('#sName').value.trim(), year=parseInt($('#sYear').value,10);
       if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
       if(!validYear(year)||!profileFor(year)){ err.textContent='Informe um ano de nascimento válido (treino a partir dos 4 anos).'; return; }
-      ls('fixbrain.pendente',JSON.stringify({email,name,year}));
+      if(!$('#sTerms').checked){ err.textContent='Para criar a conta é preciso aceitar os Termos de Uso e a Política de Privacidade.'; return; }
+      if(isMinor(year)&&!$('#sGuard').checked){ err.textContent='Para menores de 18 anos, a conta precisa ser criada e autorizada por um responsável legal.'; return; }
+      ls('fixbrain.pendente',JSON.stringify({email,name,year,terms:true,guardian:isMinor(year)}));
       const hasSession=await Cloud.signUp(email,pass);
       if(hasSession) await route();
       else{ err.className='okmsg'; err.textContent='Conta criada! Enviamos um link de confirmação para o seu e-mail. Depois de confirmar, volte aqui e entre.'; setTab(false); }
@@ -446,8 +516,10 @@ $('#saveCadastro').onclick=async()=>{
   const name=$('#cName').value.trim(), year=parseInt($('#cYear').value,10);
   if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
   if(!validYear(year)||!profileFor(year)){ err.textContent='Informe um ano de nascimento válido (treino a partir dos 4 anos).'; return; }
+  if(!$('#cTerms').checked){ err.textContent='Para continuar é preciso aceitar os Termos de Uso e a Política de Privacidade.'; return; }
+  if(isMinor(year)&&!$('#cGuard').checked){ err.textContent='Para menores de 18 anos, o uso precisa ser autorizado por um responsável legal.'; return; }
   const btn=$('#saveCadastro'); busy(btn,true,'Salvando…');
-  try{ await Cloud.saveProfile(user.id,name,year); await route(); }
+  try{ await Cloud.saveProfile(user.id,name,year,isMinor(year)); await route(); }
   catch(e){ err.textContent=ptError(e); }
   finally{ busy(btn,false); }
 };
@@ -459,9 +531,11 @@ async function route(){
   if(u.needsProfile){
     user=u;
     let pend=null; try{ pend=JSON.parse(ls('fixbrain.pendente')||'null'); }catch(e){}
-    if(pend&&pend.name&&validYear(pend.year)){
-      try{ await Cloud.saveProfile(u.id,pend.name,pend.year); ls('fixbrain.pendente',null); return route(); }catch(e){}
+    if(pend&&pend.name&&validYear(pend.year)&&pend.terms){
+      try{ await Cloud.saveProfile(u.id,pend.name,pend.year,pend.guardian); ls('fixbrain.pendente',null); return route(); }catch(e){}
     }
+    if(u.name){ $('#cName').value=u.name; $('#cYear').value=u.year||''; }
+    syncGuard();
     show('v-cadastro'); return;
   }
   ls('fixbrain.pendente',null);
@@ -782,7 +856,17 @@ if('serviceWorker' in navigator && location.protocol==='https:' && !/claude/i.te
     b.classList.add('on');
   }
   setupEntry();
+  if(MODE.mode==='cloud'&&RECOVERY){
+    let ok=false;
+    for(let i=0;i<20&&!ok;i++){ try{ const {data:{session}}=await sb.auth.getSession(); ok=!!session; }catch(e){} if(!ok) await new Promise(r=>setTimeout(r,250)); }
+    try{ history.replaceState(null,'',location.pathname); }catch(e){}
+    if(ok){ show('v-novasenha'); return; }
+  }
   try{ await route(); }catch(e){ setupEntry(); show('v-login'); }
+  if(MODE.mode==='cloud'&&(LINK_ERROR||RECOVERY)&&!user){
+    try{ history.replaceState(null,'',location.pathname); }catch(e){}
+    $('#lErr').className='err'; $('#lErr').textContent='O link de nova senha expirou ou já foi usado. Toque em "Esqueci minha senha" para receber outro.';
+  }
 })();
 })();
 </script>

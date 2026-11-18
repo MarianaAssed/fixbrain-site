@@ -206,7 +206,7 @@ body.reduce .view.on{animation:none}
     </div>
     <footer>
       <p>O NEBULA é um módulo do FixBrain, plataforma do Instituto Neuracademy. Ferramenta complementar de bem-estar e psicoeducação: não diagnostica nem substitui avaliação ou tratamento.</p>
-      <p><a href="../">← Voltar ao FixBrain</a></p>
+      <p><a href="../">← Voltar ao FixBrain</a> · <a href="../termos.html">Termos de Uso</a> · <a href="../privacidade.html">Política de Privacidade</a></p>
     </footer>
   </section>
 
@@ -405,12 +405,15 @@ body.reduce .view.on{animation:none}
       <div id="upFields" hidden>
         <label for="aName">Primeiro nome</label><input type="text" id="aName" autocomplete="given-name">
         <label for="aYear">Ano de nascimento</label><input type="text" id="aYear" inputmode="numeric" maxlength="4" placeholder="Ex.: 1985">
+        <label class="toggle" style="border-bottom:0"><input type="checkbox" id="sTerms"><div><span>Li e aceito os <a href='../termos.html' rel='noopener' target='_blank'>Termos de Uso</a> e a <a href='../privacidade.html' rel='noopener' target='_blank'>Política de Privacidade</a>, e autorizo o tratamento dos meus registros de prática para meu próprio acompanhamento.</span></div></label>
+        <label class="toggle" id="sGuardWrap" style="border-bottom:0;display:none"><input type="checkbox" id="sGuard"><div><span>Sou mãe, pai ou responsável legal e autorizo o uso por esta criança ou adolescente.</span></div></label>
       </div>
       <label for="aEmail">E-mail</label><input type="email" id="aEmail" autocomplete="email">
       <label for="aPass">Senha</label><input type="password" id="aPass" autocomplete="current-password">
       <p class="err" id="aErr" role="alert"></p>
       <div class="row"><button class="btn" id="aGo">Entrar</button></div>
       <p class="hint" id="aHint">Primeira vez? Use o e-mail que sua neuropsicóloga autorizou. A senha precisa ter pelo menos 6 caracteres.</p>
+      <p class="hint"><a href="../termos.html" target="_blank" rel="noopener">Termos de Uso</a> · <a href="../privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a></p>
     </div>
   </section>
   <section class="view" id="v-perfil">
@@ -418,6 +421,8 @@ body.reduce .view.on{animation:none}
     <div class="panel" style="max-width:460px">
       <label for="cName">Primeiro nome</label><input type="text" id="cName" autocomplete="given-name">
       <label for="cYear">Ano de nascimento</label><input type="text" id="cYear" inputmode="numeric" maxlength="4" placeholder="Ex.: 1985">
+      <label class="toggle" style="border-bottom:0"><input type="checkbox" id="cTerms"><div><span>Li e aceito os <a href='../termos.html' rel='noopener' target='_blank'>Termos de Uso</a> e a <a href='../privacidade.html' rel='noopener' target='_blank'>Política de Privacidade</a>, e autorizo o tratamento dos meus registros de prática para meu próprio acompanhamento.</span></div></label>
+      <label class="toggle" id="cGuardWrap" style="border-bottom:0;display:none"><input type="checkbox" id="cGuard"><div><span>Sou mãe, pai ou responsável legal e autorizo o uso por esta criança ou adolescente.</span></div></label>
       <p class="err" id="cErr" role="alert"></p>
       <div class="row"><button class="btn" id="cSave">Salvar e continuar</button></div>
     </div>
@@ -540,14 +545,15 @@ const Cloud = {
     let admin=false;
     try{ const {data}=await sb.rpc('is_admin'); admin=data===true; }catch(e){}
     if(admin) return {id:session.user.id,name:'Profissional',admin:true};
-    const {data}=await sb.from('profiles').select('name,birth_year').eq('id',session.user.id).maybeSingle();
+    const {data}=await sb.from('profiles').select('name,birth_year,consent_at').eq('id',session.user.id).maybeSingle();
     if(!data) return {id:session.user.id,needsProfile:true};
+    if(!data.consent_at) return {id:session.user.id,needsProfile:true,name:data.name,year:data.birth_year};
     return {id:session.user.id,name:data.name,year:data.birth_year};
   },
   async signIn(e,p){ const {error}=await sb.auth.signInWithPassword({email:e,password:p}); if(error) throw error; },
   async signUp(e,p){ const opts=/(^|\.)fixbrain\.com\.br$/.test(location.hostname)?{emailRedirectTo:location.origin+location.pathname}:undefined; const {data,error}=await sb.auth.signUp({email:e,password:p,options:opts}); if(error) throw error; return !!data.session; },
   async signOut(){ try{ await sb.auth.signOut(); }catch(e){} },
-  async saveProfile(id,name,year){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year}); if(error) throw error; },
+  async saveProfile(id,name,year,guardian){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year,consent_at:new Date().toISOString(),consent_version:TERMS_VERSION,guardian_consent:!!guardian}); if(error) throw error; },
   async list(){ const {data,error}=await sb.from('nebula_sessions').select('*').eq('user_id',user.id).order('created_at'); if(error) throw error; return data||[]; },
   async save(s){ const row={user_id:user.id}; COLS.forEach(c=>row[c]=s[c]); const {error}=await sb.from('nebula_sessions').insert(row); return !error; },
   async clear(){ const {error}=await sb.from('nebula_sessions').delete().eq('user_id',user.id); if(error) throw error; return true; },
@@ -583,6 +589,10 @@ function ptError(e){
   if(/fetch|network|timeout/i.test(m)) return 'Sem conexão com o servidor. Tente de novo.';
   return 'Algo deu errado: '+m;
 }
+/* Mesma versão de termos e mesmo registro de aceite usados pelo Órbita (tabela profiles). */
+const TERMS_VERSION='2026-11-18';
+const isMinor = y => validYear(y) && (new Date().getFullYear()-y)<18;
+function syncGuard(){ $('#sGuardWrap').style.display=isMinor(parseInt($('#aYear').value,10))?'flex':'none'; $('#cGuardWrap').style.display=isMinor(parseInt($('#cYear').value,10))?'flex':'none'; }
 const validYear = y => { const n=new Date().getFullYear(); return y && y>=n-110 && y<=n-4; };
 
 /* ================= NAVEGAÇÃO ================= */
@@ -1044,6 +1054,7 @@ $('#sVol').oninput=e=>{ cfg.volume=+e.target.value; saveCfg(); Snd.applyVolume()
 let signup=false;
 function setSignup(v){ signup=v; $('#tIn').setAttribute('aria-pressed',!v); $('#tUp').setAttribute('aria-pressed',v); $('#upFields').hidden=!v; $('#aGo').textContent=v?'Criar conta':'Entrar'; $('#aPass').autocomplete=v?'new-password':'current-password'; $('#aErr').textContent=''; $('#aErr').className='err'; }
 function renderAccount(){ if(MODE!=='cloud'){ $('#aErr').textContent='Sem conexão com o servidor do FixBrain agora. Você pode praticar normalmente; o histórico fica neste navegador.'; } setSignup(false); }
+$('#aYear').addEventListener('input',syncGuard); $('#cYear').addEventListener('input',syncGuard);
 $('#tIn').onclick=()=>setSignup(false); $('#tUp').onclick=()=>setSignup(true);
 $('#aPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#aGo').click(); });
 $('#aGo').onclick=async()=>{
@@ -1057,7 +1068,9 @@ $('#aGo').onclick=async()=>{
       const name=$('#aName').value.trim(), year=parseInt($('#aYear').value,10);
       if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
       if(!validYear(year)){ err.textContent='Informe um ano de nascimento válido.'; return; }
-      ls('fixbrain.pendente',JSON.stringify({email,name,year}));
+      if(!$('#sTerms').checked){ err.textContent='Para criar a conta é preciso aceitar os Termos de Uso e a Política de Privacidade.'; return; }
+      if(isMinor(year)&&!$('#sGuard').checked){ err.textContent='Para menores de 18 anos, a conta precisa ser criada e autorizada por um responsável legal.'; return; }
+      ls('fixbrain.pendente',JSON.stringify({email,name,year,terms:true,guardian:isMinor(year)}));
       const has=await Cloud.signUp(email,pass);
       if(!has){ err.className='okmsg'; err.textContent='Conta criada! Enviamos um link de confirmação para o seu e-mail. Depois de confirmar, volte e entre.'; setSignup(false); return; }
     }else await Cloud.signIn(email,pass);
@@ -1070,17 +1083,19 @@ async function resolveUser(){
   let u=null; try{ u=await Cloud.current(); }catch(e){}
   if(u&&u.needsProfile){
     let pend=null; try{ pend=JSON.parse(ls('fixbrain.pendente')||'null'); }catch(e){}
-    if(pend&&pend.name&&validYear(pend.year)){ try{ await Cloud.saveProfile(u.id,pend.name,pend.year); ls('fixbrain.pendente',null); u=await Cloud.current(); }catch(e){} }
+    if(pend&&pend.name&&validYear(pend.year)&&pend.terms){ try{ await Cloud.saveProfile(u.id,pend.name,pend.year,pend.guardian); ls('fixbrain.pendente',null); u=await Cloud.current(); }catch(e){} }
   }
   user=u;
-  if(u&&u.needsProfile) show(FLOW.perfil);
+  if(u&&u.needsProfile){ if(u.name){ $('#cName').value=u.name; $('#cYear').value=u.year||''; } syncGuard(); show(FLOW.perfil); }
 }
 $('#cSave').onclick=async()=>{
   const err=$('#cErr'); err.textContent='';
   const name=$('#cName').value.trim(), year=parseInt($('#cYear').value,10);
   if(!name){ err.textContent='Digite seu primeiro nome.'; return; }
   if(!validYear(year)){ err.textContent='Informe um ano de nascimento válido.'; return; }
-  try{ await Cloud.saveProfile(user.id,name,year); await resolveUser(); go(''); onRoute(); }catch(e){ err.textContent=ptError(e); }
+  if(!$('#cTerms').checked){ err.textContent='Para continuar é preciso aceitar os Termos de Uso e a Política de Privacidade.'; return; }
+  if(isMinor(year)&&!$('#cGuard').checked){ err.textContent='Para menores de 18 anos, o uso precisa ser autorizado por um responsável legal.'; return; }
+  try{ await Cloud.saveProfile(user.id,name,year,isMinor(year)); await resolveUser(); go(''); onRoute(); }catch(e){ err.textContent=ptError(e); }
 };
 
 /* ================= PAINEL PROFISSIONAL ================= */

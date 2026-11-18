@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Termos de Uso · FixBrain</title>
+<meta name="theme-color" content="#081a2c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F5; --surface:#FFFFFF; --ink:#15283A; --muted:#566778; --line:#D2DBE4;
+  --accent:#2B5C8A; --accent-ink:#FFFFFF; --soft:#E1EAF3; --target:#36C2B1;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1824; --surface:#152434; --ink:#E5ECF3; --muted:#97A8B9; --line:#26394D;
+    --accent:#79AEDF; --accent-ink:#0E1824; --soft:#1B2E42; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1824; --surface:#152434; --ink:#E5ECF3; --muted:#97A8B9; --line:#26394D;
+  --accent:#79AEDF; --accent-ink:#0E1824; --soft:#1B2E42; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Figtree,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:23px;letter-spacing:-.015em}
+.brand small{font-weight:500;font-size:14px;color:var(--muted)}
+.mark{width:31px;height:31px;border-radius:50%;border:2.5px solid var(--accent);position:relative;flex:none}
+.mark::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--target);top:-4px;left:14px}
+.crp{font-size:14px;color:var(--muted)}
+.hero{padding:34px 0 10px}
+h1{font-size:clamp(32px,6vw,50px);line-height:1.08;letter-spacing:-.025em;margin:0 0 18px;max-width:17ch}
+.lead{font-size:19px;color:var(--muted);max-width:56ch;margin:0 0 10px}
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:46px 0 16px;font-weight:600}
+.mods{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.mod{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:9px;text-decoration:none}
+a.mod{transition:border-color .15s, transform .15s}
+a.mod:hover{border-color:var(--accent);transform:translateY(-2px)}
+.mod .name{font-size:21px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+.mod p{margin:0;font-size:15px;color:var(--muted)}
+.tag{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--soft);color:var(--accent)}
+.mod.soon{opacity:.62}
+.mod.soon .tag{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.install{margin-top:18px;border:0;border-radius:10px;padding:13px 22px;font:inherit;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.install[hidden]{display:none}
+.go{margin-top:6px;font-weight:600;color:var(--accent);font-size:15px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:46px 0 0}
+.note p{margin:0;font-size:15px;color:var(--muted)}
+.note p+p{margin-top:10px}
+footer{margin:52px 0 40px;padding-top:22px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer p{margin:0 0 5px}
+</style>
+<style>
+.doc{max-width:720px}
+.doc h1{max-width:none;font-size:clamp(28px,5vw,40px)}
+.doc h2{text-transform:none;letter-spacing:-.01em;font-size:20px;color:var(--ink);margin:34px 0 10px;font-weight:700}
+.doc p,.doc li{font-size:16px;color:var(--ink)}
+.doc ul{padding-left:22px;margin:8px 0}
+.doc li{margin:5px 0}
+.doc .meta{color:var(--muted);font-size:14px;margin:0 0 8px}
+.doc a{color:var(--accent);font-weight:600}
+.doc table{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+.doc th,.doc td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.doc th{color:var(--muted);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.tablewrap{overflow-x:auto}
+.back{display:inline-block;margin:6px 0 0;font-weight:600;color:var(--accent);text-decoration:none;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap doc">
+  <header class="top">
+    <div class="brand"><span class="mark" aria-hidden="true"></span>FixBrain <small>Neuracademy</small></div>
+    <a class="back" href="./">← Voltar</a>
+  </header>
+  <h1>Termos de Uso</h1>
+  <p class="meta">Versão de 18 de novembro de 2026</p>
+  <p>Estes termos valem para o uso do FixBrain e do módulo Órbita. Ao criar uma conta, você declara que leu e concorda com eles e com a <a href='/privacidade'>Política de Privacidade</a>.</p>
+
+  <h2>1. O que é</h2>
+  <p>O FixBrain é a plataforma de ferramentas digitais do Instituto Neuracademy, mantida por MARIANA M ASSED (nome fantasia Neuracademy), CNPJ 31.882.532/0001-23, com endereço na Rua Teodoro Sampaio, 352, cj 48, São Paulo, SP. O Órbita é um módulo de treino de rastreamento visual de múltiplos objetos em 3D, baseado no paradigma descrito por Pylyshyn e Storm (1988), com ajuste automático de dificuldade.</p>
+
+  <h2>2. O que não é</h2>
+  <p>O Órbita é um instrumento de treino e estimulação cognitiva. Ele <strong>não é um teste psicológico, não faz diagnóstico e não substitui avaliação neuropsicológica, consulta, tratamento ou orientação de profissional de saúde</strong>. Os resultados mostram a evolução no próprio treino e devem ser interpretados pela profissional que acompanha você. Não há garantia de resultado clínico, escolar, profissional ou esportivo.</p>
+
+  <h2>3. Quem pode usar</h2>
+  <ul>
+    <li>O acesso é liberado pela profissional responsável, que autoriza o e-mail de cada pessoa.</li>
+    <li>O treino é indicado a partir dos 4 anos de idade.</li>
+    <li>Menores de 18 anos só podem usar com conta criada e autorizada pela mãe, pelo pai ou pelo responsável legal, que deve acompanhar o uso pelas crianças.</li>
+  </ul>
+
+  <h2>4. Sua conta</h2>
+  <ul>
+    <li>A conta é pessoal. Cada pessoa deve treinar na própria conta, para que o histórico seja fiel.</li>
+    <li>Guarde sua senha e não a compartilhe. Se esquecer, use "Esqueci minha senha" na tela de entrada.</li>
+    <li>Informe dados verdadeiros, em especial o ano de nascimento, que define o perfil de treino.</li>
+  </ul>
+
+  <h2>5. Cuidados ao treinar</h2>
+  <ul>
+    <li>Treine sentado, em ambiente tranquilo e com boa iluminação.</li>
+    <li>Interrompa o treino e avise a profissional se sentir tontura, enjoo, dor de cabeça, cansaço visual ou qualquer mal-estar.</li>
+    <li>Se você ou a criança tem histórico de epilepsia, convulsões ou sensibilidade a estímulos visuais em movimento, converse com seu médico e com a profissional antes de usar.</li>
+    <li>Não use enquanto dirige ou realiza atividade que exija atenção.</li>
+  </ul>
+
+  <h2>6. Uso permitido</h2>
+  <p>Você pode usar o Órbita para o seu próprio treino. Não é permitido copiar, modificar, revender ou distribuir o sistema, tentar acessar contas ou dados de outras pessoas, nem usar meios automáticos para interagir com ele.</p>
+
+  <h2>7. Propriedade intelectual</h2>
+  <p>O programa, o desenho das telas, os textos e as marcas FixBrain e Neuracademy pertencem à mantenedora. O uso do serviço não transfere nenhum desses direitos.</p>
+
+  <h2>8. Condições comerciais</h2>
+  <p>Quando o acesso for pago, o valor, a forma de pagamento e o período são combinados diretamente com a profissional ou com o Instituto Neuracademy antes da liberação.</p>
+
+  <h2>9. Disponibilidade</h2>
+  <p>Trabalhamos para manter o serviço no ar, mas ele pode ficar indisponível por manutenção ou por falha de terceiros, como internet e servidores. Podemos melhorar, alterar ou descontinuar funcionalidades, avisando com antecedência razoável quando a mudança afetar seu uso.</p>
+
+  <h2>10. Encerramento</h2>
+  <p>Você pode pedir o encerramento da conta a qualquer momento pelo e-mail <a href="mailto:neuracademy.performance@gmail.com">neuracademy.performance@gmail.com</a>. Podemos suspender contas usadas em desacordo com estes termos.</p>
+
+  <h2>11. Responsabilidade</h2>
+  <p>Respondemos pelos danos que causarmos, nos limites da lei, incluindo o Código de Defesa do Consumidor. Não respondemos por problemas causados por uso em desacordo com estes termos, por falhas do aparelho ou da conexão de quem usa, nem por decisões tomadas com base nos resultados sem orientação profissional.</p>
+
+  <h2>12. Mudanças e foro</h2>
+  <p>Estes termos podem ser atualizados, com a nova versão publicada nesta página. Eles são regidos pelas leis brasileiras. Fica eleito o foro do domicílio do consumidor para resolver qualquer questão.</p>
+
+  <h2>Contato</h2>
+  <p>Instituto Neuracademy · Mariana Assed, CRP 06/112781 · <a href="mailto:neuracademy.performance@gmail.com">neuracademy.performance@gmail.com</a></p>
+
+  <footer>
+    <p>FixBrain é uma plataforma do Instituto Neuracademy de Avaliação, Reabilitação e Treinamento.</p>
+    <p>Rua Teodoro Sampaio, 352, cj 48 · São Paulo · <a href='/termos'>Termos de Uso</a> · <a href='/privacidade'>Política de Privacidade</a></p>
+  </footer>
+</div>
+</body>
+</html>
