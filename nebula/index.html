@@ -545,7 +545,7 @@ const Cloud = {
     return {id:session.user.id,name:data.name,year:data.birth_year};
   },
   async signIn(e,p){ const {error}=await sb.auth.signInWithPassword({email:e,password:p}); if(error) throw error; },
-  async signUp(e,p){ const {data,error}=await sb.auth.signUp({email:e,password:p}); if(error) throw error; return !!data.session; },
+  async signUp(e,p){ const opts=/(^|\.)fixbrain\.com\.br$/.test(location.hostname)?{emailRedirectTo:location.origin+location.pathname}:undefined; const {data,error}=await sb.auth.signUp({email:e,password:p,options:opts}); if(error) throw error; return !!data.session; },
   async signOut(){ try{ await sb.auth.signOut(); }catch(e){} },
   async saveProfile(id,name,year){ const {error}=await sb.from('profiles').upsert({id,name,birth_year:year}); if(error) throw error; },
   async list(){ const {data,error}=await sb.from('nebula_sessions').select('*').eq('user_id',user.id).order('created_at'); if(error) throw error; return data||[]; },
